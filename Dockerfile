@@ -9,7 +9,7 @@ RUN npm run build
 
 # nginx serves the static app and proxies /api and /socket.io to the backend,
 # so the browser only ever talks to one origin.
-FROM nginx:1.27-alpine
+FROM nginx:1.29-alpine
 ENV API_UPSTREAM=http://api:3000
 COPY deploy/nginx.conf.template /etc/nginx/templates/default.conf.template
 COPY --from=build /app/dist /usr/share/nginx/html
