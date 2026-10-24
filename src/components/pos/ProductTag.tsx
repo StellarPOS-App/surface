@@ -1,4 +1,5 @@
 import { categoryColor } from '@/lib/pos';
+import { useT } from '@/i18n';
 import { highlight } from '@/lib/search';
 import type { CatalogProduct } from '@/types';
 import { cn } from '@/utils/helpers';
@@ -17,13 +18,14 @@ export default function ProductTag({
   /** Search text to highlight in the name. */
   query?: string;
 }) {
+  const t = useT();
   const soldOut = product.stock - inCart <= 0;
   return (
     <button
       type="button"
       onClick={onAdd}
       disabled={soldOut}
-      aria-label={`Add ${product.name}`}
+      aria-label={t('pos.add', { name: product.name })}
       className={cn(
         'group relative flex min-h-[112px] flex-col overflow-hidden rounded-lg border border-ink-line bg-paper-card p-3 pl-4 text-left shadow-sm transition',
         'hover:-translate-y-0.5 hover:shadow-slip active:translate-y-0 disabled:cursor-not-allowed disabled:opacity-50',
@@ -54,7 +56,7 @@ export default function ProductTag({
             soldOut ? 'text-signal' : product.lowStock ? 'text-amber' : 'text-ink-3',
           )}
         >
-          {soldOut ? 'sold out' : `${product.stock - inCart} left`}
+          {soldOut ? t('pos.soldOut') : t('pos.left', { count: product.stock - inCart })}
         </span>
       </span>
       {inCart > 0 && (

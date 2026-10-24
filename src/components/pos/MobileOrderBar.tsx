@@ -1,6 +1,7 @@
 import { ShoppingBag } from 'lucide-react';
 import { useState } from 'react';
 import { useStoreSettings } from '@/hooks/queries';
+import { useT } from '@/i18n';
 import { computeTotals, useCartStore } from '@/stores/cartStore';
 import type { PaymentMethod } from '@/types';
 import Modal from '../ui/Modal';
@@ -18,6 +19,7 @@ export default function MobileOrderBar({
   onCharge: (method: PaymentMethod) => void;
 }) {
   const [open, setOpen] = useState(false);
+  const t = useT();
   const taxRateBps = useStoreSettings().data?.taxRateBps ?? 0;
   const { lines, discountCents } = useCartStore();
   const totals = computeTotals(lines, discountCents, taxRateBps);
@@ -29,22 +31,27 @@ export default function MobileOrderBar({
           type="button"
           onClick={() => setOpen(true)}
           className="flex h-14 w-full items-center gap-3 rounded-xl bg-ink px-4 text-paper shadow-press active:translate-y-px"
-          aria-label={`View order: ${totals.itemCount} items`}
+          aria-label={t('cart.viewOrder', { items: t('cart.items', { count: totals.itemCount }) })}
         >
           <ShoppingBag className="h-5 w-5" />
           <span className="font-medium">
             {totals.itemCount === 0
-              ? 'No items yet'
-              : `${totals.itemCount} ${totals.itemCount === 1 ? 'item' : 'items'}`}
+              ? t('cart.noItems')
+              : t('cart.items', { count: totals.itemCount })}
           </span>
           <span className="ml-auto flex items-center gap-2">
             <Money cents={totals.totalCents} className="text-lg font-semibold" />
-            <span className="text-sm text-paper/70">View</span>
+            <span className="text-sm text-paper/70">{t('cart.view')}</span>
           </span>
         </button>
       </div>
 
-      <Modal open={open} onClose={() => setOpen(false)} eyebrow="Register" title="Current order">
+      <Modal
+        open={open}
+        onClose={() => setOpen(false)}
+        eyebrow={t('nav.register')}
+        title={t('cart.current')}
+      >
         <div className="-mx-6 -my-5">
           <ReceiptCart
             onCharge={(method) => {

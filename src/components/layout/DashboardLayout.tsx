@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useStoreSettings } from '@/hooks/queries';
 import { useAuth } from '@/hooks/useAuth';
+import { useT } from '@/i18n';
 import { useRealtime, type Connection } from '@/hooks/useRealtime';
 import { useCartStore } from '@/stores/cartStore';
 import { useThemeStore } from '@/stores/themeStore';
@@ -22,18 +23,18 @@ const PREFETCH: Record<string, () => Promise<unknown>> = {
 };
 
 const MODES: { to: string; label: string; key: string; minRole?: Role }[] = [
-  { to: '/pos', label: 'Register', key: '1' },
-  { to: '/transactions', label: 'Orders', key: '2' },
-  { to: '/inventory', label: 'Stock', key: '3' },
-  { to: '/customers', label: 'Customers', key: '4' },
-  { to: '/dashboard', label: 'Reports', key: '5' },
-  { to: '/settings', label: 'Settings', key: '6' },
+  { to: '/pos', label: 'nav.register', key: '1' },
+  { to: '/transactions', label: 'nav.orders', key: '2' },
+  { to: '/inventory', label: 'nav.stock', key: '3' },
+  { to: '/customers', label: 'nav.customers', key: '4' },
+  { to: '/dashboard', label: 'nav.reports', key: '5' },
+  { to: '/settings', label: 'nav.settings', key: '6' },
 ];
 
 const connectionLabel: Record<Connection, string> = {
-  live: 'Live',
-  connecting: 'Connecting',
-  offline: 'Offline',
+  live: 'status.live',
+  connecting: 'status.connecting',
+  offline: 'status.offline',
 };
 
 function Clock() {
@@ -57,6 +58,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const { theme, toggle } = useThemeStore();
   const cartCount = useCartStore((s) => s.lines.reduce((n, l) => n + l.quantity, 0));
   const navigate = useNavigate();
+  const t = useT();
   // Stable across renders so the shortcut listener below is attached once.
   const modes = useMemo(
     () => MODES.filter((m) => !m.minRole || can(m.minRole)),
@@ -109,7 +111,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                   )
                 }
               >
-                {m.label}
+                {t(m.label)}
                 {m.to === '/pos' && cartCount > 0 && (
                   <span className="figures rounded bg-ink px-1.5 text-[11px] text-paper">
                     {cartCount}
@@ -126,8 +128,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <button
               onClick={toggle}
               className="rounded-md p-2 text-ink-3 hover:bg-paper-2 hover:text-ink"
-              aria-label={theme === 'dark' ? 'Switch to day mode' : 'Switch to night shift'}
-              title={theme === 'dark' ? 'Day mode' : 'Night shift'}
+              aria-label={theme === 'dark' ? t('status.dayMode') : t('status.nightShift')}
+              title={theme === 'dark' ? t('status.dayMode') : t('status.nightShift')}
             >
               {theme === 'dark' ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
             </button>
@@ -139,8 +141,8 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
             <button
               onClick={logout}
               className="rounded-md p-2 text-ink-3 hover:bg-paper-2 hover:text-ink"
-              aria-label="Sign out"
-              title="Sign out"
+              aria-label={t('status.signOut')}
+              title={t('status.signOut')}
             >
               <LogOut className="h-4 w-4" />
             </button>
@@ -151,7 +153,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
           <span
             className="flex items-center gap-1.5"
             role="status"
-            aria-label={`Realtime ${connectionLabel[connection]}`}
+            aria-label={`Realtime ${t(connectionLabel[connection])}`}
           >
             <span
               className={cn(
@@ -163,7 +165,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
                     : 'bg-signal',
               )}
             />
-            {connectionLabel[connection]}
+            {t(connectionLabel[connection])}
           </span>
           {store && (
             <span className={cn('hidden sm:inline', store.stellar.enabled && 'text-lumen')}>

@@ -13,6 +13,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Button from '@/components/ui/Button';
 import { useCatalog, useCategories } from '@/hooks/queries';
 import { useHotkey } from '@/hooks/useHotkey';
+import { useT } from '@/i18n';
 import { useCartStore } from '@/stores/cartStore';
 import type { PaymentMethod } from '@/types';
 import { cn } from '@/utils/helpers';
@@ -22,6 +23,7 @@ export default function POSTerminal() {
   const [category, setCategory] = useState<string | null>(null);
   const [checkout, setCheckout] = useState<PaymentMethod | null>(null);
   const searchRef = useRef<HTMLInputElement>(null);
+  const t = useT();
   // The whole catalog is loaded once and searched locally: instant, works
   // in any word order, ignores accents, and matches categories too.
   const { data: catalog, isLoading, isError, error } = useCatalog();
@@ -46,7 +48,8 @@ export default function POSTerminal() {
 
   const addProduct = (id: string) => {
     const product = products.find((p) => p.id === id);
-    if (product && !add(product)) toast.error(`Only ${product.stock} ${product.name} in stock`);
+    if (product && !add(product))
+      toast.error(t('pos.onlyInStock', { count: product.stock, name: product.name }));
   };
 
   return (
@@ -54,7 +57,7 @@ export default function POSTerminal() {
       <section className="flex min-h-0 min-w-0 flex-col" aria-label="Products">
         <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
           <label className="relative flex-1">
-            <span className="sr-only">Search products</span>
+            <span className="sr-only">{t('pos.search')}</span>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
             <input
               ref={searchRef}
@@ -67,7 +70,7 @@ export default function POSTerminal() {
                   setSearch('');
                 }
               }}
-              placeholder="Search name or scan SKU"
+              placeholder={t('pos.search')}
               className="h-12 w-full rounded-lg border-ink-line bg-paper-card pl-10 pr-12 text-base shadow-sm focus:border-lumen focus:ring-lumen"
             />
             <span className="absolute right-3 top-1/2 -translate-y-1/2">
@@ -79,7 +82,7 @@ export default function POSTerminal() {
         <div
           className="scroll-thin -mx-1 mb-4 flex gap-2 overflow-x-auto px-1 pb-1"
           role="toolbar"
-          aria-label="Categories"
+          aria-label={t('pos.categories')}
         >
           {[null, ...(categories ?? [])].map((c) => (
             <button
@@ -96,7 +99,7 @@ export default function POSTerminal() {
               {c && (
                 <span className="h-2 w-2 rounded-full" style={{ background: categoryColor(c) }} />
               )}
-              {c ?? 'Everything'}
+              {c ?? t('pos.everything')}
             </button>
           ))}
         </div>
@@ -107,10 +110,10 @@ export default function POSTerminal() {
               <LoadingSpinner size="lg" />
             </div>
           )}
-          {isError && <EmptyState title="Could not load products">{error.message}</EmptyState>}
+          {isError && <EmptyState title={t('pos.loadFailed')}>{error.message}</EmptyState>}
           {!isLoading && !isError && products.length === 0 && (
             <EmptyState
-              title={search ? `Nothing matches "${search.trim()}"` : 'No products here yet'}
+              title={search ? t('pos.noMatch', { query: search.trim() }) : t('pos.noProducts')}
               action={
                 search || category ? (
                   <Button
@@ -120,14 +123,12 @@ export default function POSTerminal() {
                       setCategory(null);
                     }}
                   >
-                    Clear search
+                    {t('pos.clearSearch')}
                   </Button>
                 ) : undefined
               }
             >
-              {search
-                ? 'Try fewer letters, another spelling, or the SKU.'
-                : 'Add products in Stock to start selling.'}
+              {search ? t('pos.noMatchHint') : t('pos.noProductsHint')}
             </EmptyState>
           )}
           <div className="grid grid-cols-2 gap-3 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-5">

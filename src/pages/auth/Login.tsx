@@ -6,6 +6,7 @@ import { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Field';
 import { useAuthStore } from '@/stores/authStore';
+import { useT } from '@/i18n';
 
 const schema = z.object({
   email: z.string().trim().min(1, 'Enter your email').email('That does not look like an email'),
@@ -25,6 +26,7 @@ export default function Login() {
   } = useForm<Form>({ resolver: zodResolver(schema) });
 
   const challenge = useAuthStore((s) => s.challenge);
+  const t = useT();
 
   const onSubmit = handleSubmit(async (values) => {
     try {
@@ -40,12 +42,12 @@ export default function Login() {
 
   return (
     <>
-      <h2 className="font-display text-4xl font-extrabold tracking-tight">Sign in to the till</h2>
-      <p className="mt-2 text-ink-2">Use the account your manager set up for you.</p>
+      <h2 className="font-display text-4xl font-extrabold tracking-tight">{t('login.title')}</h2>
+      <p className="mt-2 text-ink-2">{t('login.subtitle')}</p>
 
       <form onSubmit={onSubmit} className="mt-8 space-y-5" noValidate>
         <Input
-          label="Email"
+          label={t('login.email')}
           type="email"
           autoComplete="username"
           autoFocus
@@ -53,7 +55,7 @@ export default function Login() {
           {...register('email')}
         />
         <Input
-          label="Password"
+          label={t('login.password')}
           type="password"
           autoComplete="current-password"
           error={errors.password?.message}
@@ -65,14 +67,14 @@ export default function Login() {
           </p>
         )}
         <Button type="submit" size="lg" fullWidth loading={isSubmitting}>
-          Open register
+          {t('login.submit')}
         </Button>
       </form>
 
       <p className="mt-6 text-sm text-ink-3">
-        Setting up a new store?{' '}
+        {t('login.newStore')}{' '}
         <Link to="/auth/register" className="font-medium text-ink underline underline-offset-4">
-          Create the owner account
+          {t('login.createOwner')}
         </Link>
       </p>
       <details className="mt-8 rounded-lg border border-dashed border-ink-line px-4 py-3 text-sm text-ink-2">

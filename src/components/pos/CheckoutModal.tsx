@@ -3,6 +3,7 @@ import { useCallback, useEffect, useRef, useState } from 'react';
 import { toast } from 'sonner';
 import { useCreateSale, useRecordPayment, useTransaction, useVoidSale } from '@/hooks/queries';
 import { useFormatMoney } from '@/hooks/useFormatMoney';
+import { useT } from '@/i18n';
 import { METHOD_LABEL, quickTenders } from '@/lib/pos';
 import { useCartStore } from '@/stores/cartStore';
 import type { PaymentMethod, Transaction } from '@/types';
@@ -28,6 +29,7 @@ const TABS: { method: PaymentMethod; icon: typeof Banknote; tone: string }[] = [
 
 function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transaction) => void }) {
   const pay = useRecordPayment();
+  const t = useT();
   const money = useFormatMoney();
   const [input, setInput] = useState('');
   const tendered = input ? parseCents(input) : sale.balanceCents;
@@ -39,7 +41,9 @@ function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
       {
         onSuccess: ({ payment, transaction }) => {
           if (payment.changeCents)
-            toast.success(`Change due: ${money(payment.changeCents)}`, { duration: 8000 });
+            toast.success(t('checkout.changeDue', { amount: money(payment.changeCents) }), {
+              duration: 8000,
+            });
           onDone(transaction);
         },
         onError: (err) => toast.error(err.message),
@@ -58,7 +62,7 @@ function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
             onClick={() => submit(cents)}
             disabled={pay.isPending}
           >
-            {cents === sale.balanceCents ? 'Exact' : money(cents)}
+            {cents === sale.balanceCents ? t('checkout.exact') : money(cents)}
           </Button>
         ))}
       </div>
@@ -71,21 +75,21 @@ function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
       >
         <Input
           wrapperClassName="flex-1"
-          label="Cash received"
+          label={t('checkout.cashReceived')}
           inputMode="decimal"
           placeholder={(sale.balanceCents / 100).toFixed(2)}
           value={input}
           onChange={(e) => setInput(e.target.value)}
           className="figures text-lg"
-          error={input && !valid ? 'Less than the amount due' : undefined}
+          error={input && !valid ? t('checkout.lessThanDue') : undefined}
         />
         <Button type="submit" variant="cash" size="lg" disabled={!valid} loading={pay.isPending}>
-          Take cash
+          {t('checkout.takeCash')}
         </Button>
       </form>
       {valid && tendered! > sale.balanceCents && (
         <p className="rounded-lg bg-cash-soft px-4 py-3 text-cash-ink">
-          Change to give:{' '}
+          {t('checkout.changeToGive')}{' '}
           <Money cents={tendered! - sale.balanceCents} className="text-lg font-semibold" />
         </p>
       )}
@@ -95,6 +99,7 @@ function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
 
 function CardTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transaction) => void }) {
   const pay = useRecordPayment();
+  const t = useT();
   const [input, setInput] = useState('');
   const amount = input ? parseCents(input) : sale.balanceCents;
   const valid = amount !== null && amount > 0 && amount <= sale.balanceCents;
@@ -114,18 +119,16 @@ function CardTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
         );
       }}
     >
-      <p className="text-sm text-ink-2">
-        Run the card on your card terminal, then confirm the approved amount here.
-      </p>
+      <p className="text-sm text-ink-2">{t('checkout.cardHint')}</p>
       <Input
-        label="Amount approved"
-        hint="Charge less than the balance to split the bill across methods."
+        label={t('checkout.amountApproved')}
+        hint={t('checkout.splitHint')}
         inputMode="decimal"
         placeholder={(sale.balanceCents / 100).toFixed(2)}
         value={input}
         onChange={(e) => setInput(e.target.value)}
         className="figures text-lg"
-        error={input && !valid ? 'Must be more than zero and no more than the balance' : undefined}
+        error={input && !valid ? t('checkout.amountInvalid') : undefined}
       />
       <Button
         type="submit"
@@ -135,7 +138,7 @@ function CardTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
         disabled={!valid}
         loading={pay.isPending}
       >
-        Card approved
+        {t('checkout.cardApproved')}
       </Button>
     </form>
   );
@@ -155,6 +158,7 @@ export interface CheckoutModalProps {
 export default function CheckoutModal({ open, initialMethod, onClose }: CheckoutModalProps) {
   const { lines, customer, discountCents, clear } = useCartStore();
   const createSale = useCreateSale();
+  const tr = useT();
   const voidSale = useVoidSale();
   const [saleId, setSaleId] = useState<string | null>(null);
   const [method, setMethod] = useState<PaymentMethod>(initialMethod);
@@ -196,16 +200,16 @@ export default function CheckoutModal({ open, initialMethod, onClose }: Checkout
       if (t.status === 'completed') {
         setDone(true);
         clear();
-        toast.success(`Sale ${t.reference} complete`);
+        toast.success(tr('checkout.saleComplete', { reference: t.reference }));
       }
     },
-    [refetch, clear],
+    [refetch, clear, tr],
   );
 
   const cancel = () => {
     if (done || !sale) return onClose();
     if (sale.paidCents > 0) {
-      toast.error('Part of this sale is paid. Take the rest, or refund it from Orders.');
+      toast.error(tr('checkout.partlyPaid'));
       return;
     }
     voidSale.mutate(sale.id, { onSettled: onClose });
@@ -213,18 +217,22 @@ export default function CheckoutModal({ open, initialMethod, onClose }: Checkout
 
   const loading = !sale;
   const title = done ? (
-    'Paid in full'
+    tr('checkout.paidInFull')
   ) : sale ? (
     <Money cents={sale.balanceCents} />
   ) : (
-    'Starting sale'
+    tr('checkout.starting')
   );
 
   return (
     <Modal
       open={open}
       onClose={cancel}
-      eyebrow={sale ? `${sale.reference} / ${done ? 'complete' : 'balance due'}` : 'Checkout'}
+      eyebrow={
+        sale
+          ? `${sale.reference} / ${done ? tr('checkout.complete') : tr('checkout.balanceDue')}`
+          : 'Checkout'
+      }
       title={title}
       size="lg"
       footer={
@@ -235,15 +243,15 @@ export default function CheckoutModal({ open, initialMethod, onClose }: Checkout
               icon={<Printer className="h-4 w-4" />}
               onClick={() => window.print()}
             >
-              Print receipt
+              {tr('checkout.print')}
             </Button>
             <Button onClick={onClose} autoFocus>
-              New sale
+              {tr('checkout.newSale')}
             </Button>
           </>
         ) : (
           <Button variant="ghost" onClick={cancel} loading={voidSale.isPending}>
-            {sale && sale.paidCents > 0 ? 'Close' : 'Cancel sale'}
+            {sale && sale.paidCents > 0 ? tr('checkout.close') : tr('checkout.cancelSale')}
           </Button>
         )
       }
@@ -260,7 +268,7 @@ export default function CheckoutModal({ open, initialMethod, onClose }: Checkout
         <div className="space-y-6">
           {sale.paidCents > 0 && (
             <div className="rounded-lg border border-ink-line bg-paper px-4 py-3 text-sm">
-              <p className="eyebrow mb-2">Paid so far</p>
+              <p className="eyebrow mb-2">{tr('checkout.paidSoFar')}</p>
               <ul className="space-y-1">
                 {sale.payments
                   ?.filter((p) => p.status === 'completed')

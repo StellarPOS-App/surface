@@ -17,6 +17,7 @@ import {
 } from '@/hooks/queries';
 import { useAuth } from '@/hooks/useAuth';
 import { useThemeStore } from '@/stores/themeStore';
+import { LANGUAGES, useLanguageStore, useT, type Language } from '@/i18n';
 import ReceiptSettings from './ReceiptSettings';
 import TwoFactorSettings from './TwoFactorSettings';
 import type { Role } from '@/types';
@@ -293,6 +294,33 @@ function Staff() {
   );
 }
 
+function LanguageSection() {
+  const t = useT();
+  const { language, setLanguage } = useLanguageStore();
+  return (
+    <Section title={t('settings.language')} description={t('settings.languageHint')}>
+      <div
+        className="inline-flex rounded-lg border border-ink-line bg-paper-card p-1"
+        role="radiogroup"
+        aria-label={t('settings.language')}
+      >
+        {(Object.keys(LANGUAGES) as Language[]).map((code) => (
+          <button
+            key={code}
+            role="radio"
+            lang={code}
+            aria-checked={language === code}
+            onClick={() => setLanguage(code)}
+            className={`rounded-md px-4 py-2 text-sm ${language === code ? 'bg-ink text-paper' : 'text-ink-2'}`}
+          >
+            {LANGUAGES[code].label}
+          </button>
+        ))}
+      </div>
+    </Section>
+  );
+}
+
 export default function Settings() {
   const { can } = useAuth();
   const { theme, setTheme } = useThemeStore();
@@ -313,6 +341,7 @@ export default function Settings() {
       <Section title="Receipts" description="Header, footer and what prints. Saved on this till.">
         <ReceiptSettings />
       </Section>
+      <LanguageSection />
       <Section
         title="Appearance"
         description="Night shift swaps the paper for charcoal. Saved on this device."
