@@ -7,6 +7,7 @@ import { categoryColor } from '@/lib/pos';
 import { searchProducts } from '@/lib/search';
 import MobileOrderBar from '@/components/pos/MobileOrderBar';
 import ReceiptCart from '@/components/pos/ReceiptCart';
+import VoiceButton from '@/components/pos/VoiceButton';
 import EmptyState from '@/components/ui/EmptyState';
 import Kbd from '@/components/ui/Kbd';
 import LoadingSpinner from '@/components/ui/LoadingSpinner';
@@ -55,7 +56,7 @@ export default function POSTerminal() {
   return (
     <div className="mx-auto grid max-w-[1500px] gap-6 lg:h-[calc(100vh-8.5rem)] lg:grid-cols-[1fr_400px] supports-[height:100dvh]:lg:h-[calc(100dvh-8.5rem)]">
       <section className="flex min-h-0 min-w-0 flex-col" aria-label="Products">
-        <div className="mb-4 flex flex-col gap-3 sm:flex-row sm:items-center">
+        <div className="mb-4 flex items-center gap-3">
           <label className="relative flex-1">
             <span className="sr-only">{t('pos.search')}</span>
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-ink-3" />
@@ -77,6 +78,7 @@ export default function POSTerminal() {
               <Kbd>/</Kbd>
             </span>
           </label>
+          <VoiceButton catalog={catalog ?? []} onSearch={setSearch} onCharge={setCheckout} />
         </div>
 
         <div
