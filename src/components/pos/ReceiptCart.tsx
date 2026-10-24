@@ -11,6 +11,7 @@ import {
 } from 'lucide-react';
 import { useState } from 'react';
 import { useStoreSettings } from '@/hooks/queries';
+import { useOnline } from '@/hooks/useOnline';
 import { useT } from '@/i18n';
 import { computeTotals, useCartStore } from '@/stores/cartStore';
 import type { PaymentMethod } from '@/types';
@@ -30,6 +31,7 @@ export default function ReceiptCart({ onCharge }: { onCharge: (method: PaymentMe
   const [discountOpen, setDiscountOpen] = useState(false);
   const [discountInput, setDiscountInput] = useState('');
   const empty = lines.length === 0;
+  const online = useOnline();
   const t = useT();
 
   return (
@@ -180,7 +182,7 @@ export default function ReceiptCart({ onCharge }: { onCharge: (method: PaymentMe
           variant="cash"
           size="xl"
           className="flex-col gap-0.5 px-2 text-base"
-          disabled={empty}
+          disabled={empty || !online}
           onClick={() => onCharge('cash')}
         >
           <Banknote className="h-5 w-5" /> {t('cart.cash')}
@@ -189,7 +191,7 @@ export default function ReceiptCart({ onCharge }: { onCharge: (method: PaymentMe
           variant="card"
           size="xl"
           className="flex-col gap-0.5 px-2 text-base"
-          disabled={empty}
+          disabled={empty || !online}
           onClick={() => onCharge('card')}
         >
           <CreditCard className="h-5 w-5" /> {t('cart.card')}
@@ -198,7 +200,7 @@ export default function ReceiptCart({ onCharge }: { onCharge: (method: PaymentMe
           variant="lumen"
           size="xl"
           className="flex-col gap-0.5 px-2 text-base"
-          disabled={empty}
+          disabled={empty || !online}
           onClick={() => onCharge('stellar')}
         >
           <Sparkles className="h-5 w-5" /> {t('cart.stellar')}

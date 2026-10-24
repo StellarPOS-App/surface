@@ -14,6 +14,8 @@ export const fr: Messages = {
     connecting: 'Connexion',
     offline: 'Hors ligne',
     signOut: 'Se déconnecter',
+    offlineBanner:
+      'Hors ligne. Vous pouvez consulter les produits, mais les ventes nécessitent une connexion.',
     dayMode: 'Mode jour',
     nightShift: 'Mode nuit',
   },

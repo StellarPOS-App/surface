@@ -17,6 +17,7 @@ export const en = {
     connecting: 'Connecting',
     offline: 'Offline',
     signOut: 'Sign out',
+    offlineBanner: 'Offline. You can browse products, but sales need a connection.',
     dayMode: 'Day mode',
     nightShift: 'Night shift',
   },
