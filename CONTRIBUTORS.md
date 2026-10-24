@@ -23,7 +23,7 @@ and GitHub activity, so it lists real accounts only.
 
 ## Forks
 
-These 15 accounts have forked `StellarPOS-App/surface` but have not yet had a
+These 10 accounts have forked `StellarPOS-App/surface` but have not yet had a
 pull request merged here (several have contributed to the other StellarPOS
 repositories). Once a pull request from a fork is merged, its owner moves to
 the table above. Last updated 24 October 2026.
@@ -34,16 +34,11 @@ the table above. Last updated 24 October 2026.
 | [@prodbycorne](https://github.com/prodbycorne) | [prodbycorne/stellarPOS-surface](https://github.com/prodbycorne/stellarPOS-surface) | 18 Jun 2026 |
 | [@Temi-suwa18](https://github.com/Temi-suwa18) | [Temi-suwa18/stellarPOS-surface](https://github.com/Temi-suwa18/stellarPOS-surface) | 18 Jun 2026 |
 | [@jakespepe](https://github.com/jakespepe) | [jakespepe/surface](https://github.com/jakespepe/surface) | 4 Oct 2026 |
-| [@boluwacodes](https://github.com/boluwacodes) | [boluwacodes/surface](https://github.com/boluwacodes/surface) | 4 Oct 2026 |
 | [@richardtoms100](https://github.com/richardtoms100) | [richardtoms100/surface](https://github.com/richardtoms100/surface) | 4 Oct 2026 |
 | [@Smoothjane](https://github.com/Smoothjane) | [Smoothjane/surface](https://github.com/Smoothjane/surface) | 4 Oct 2026 |
 | [@davidishere1](https://github.com/davidishere1) | [davidishere1/surface](https://github.com/davidishere1/surface) | 4 Oct 2026 |
 | [@springswell](https://github.com/springswell) | [springswell/surface](https://github.com/springswell/surface) | 4 Oct 2026 |
-| [@alansamdev](https://github.com/alansamdev) | [alansamdev/surface](https://github.com/alansamdev/surface) | 4 Oct 2026 |
-| [@gideononiru](https://github.com/gideononiru) | [gideononiru/surface](https://github.com/gideononiru/surface) | 4 Oct 2026 |
 | [@laurastephaniee](https://github.com/laurastephaniee) | [laurastephaniee/surface](https://github.com/laurastephaniee/surface) | 4 Oct 2026 |
-| [@floraispretty](https://github.com/floraispretty) | [floraispretty/surface](https://github.com/floraispretty/surface) | 4 Oct 2026 |
-| [@Derinsolababy](https://github.com/Derinsolababy) | [Derinsolababy/surface](https://github.com/Derinsolababy/surface) | 4 Oct 2026 |
 | [@choniszn1](https://github.com/choniszn1) | [choniszn1/surface](https://github.com/choniszn1/surface) | 4 Oct 2026 |
 
 To be added, open a pull request. Your first merged contribution counts.
