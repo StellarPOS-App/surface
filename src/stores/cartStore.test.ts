@@ -46,3 +46,15 @@ describe('cart', () => {
     expect(computeTotals(lines, 500, 0).totalCents).toBe(0);
   });
 });
+
+describe('cart persistence', () => {
+  it('saves the order in progress so a reload keeps it', () => {
+    useCartStore.getState().clear();
+    useCartStore.getState().add(makeProduct({ name: 'Persisted Latte' }), 2);
+    useCartStore.getState().setDiscount(50);
+    const saved = JSON.parse(localStorage.getItem('stellarpos.cart')!).state;
+    expect(saved.lines[0]).toMatchObject({ quantity: 2, product: { name: 'Persisted Latte' } });
+    expect(saved.discountCents).toBe(50);
+    expect(saved).not.toHaveProperty('add');
+  });
+});

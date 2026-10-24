@@ -3,6 +3,7 @@ import { useEffect, useMemo, useState, type ReactNode } from 'react';
 import { NavLink, useNavigate } from 'react-router-dom';
 import { useStoreSettings } from '@/hooks/queries';
 import { useAuth } from '@/hooks/useAuth';
+import { useOnline } from '@/hooks/useOnline';
 import { useT } from '@/i18n';
 import { useRealtime, type Connection } from '@/hooks/useRealtime';
 import { useCartStore } from '@/stores/cartStore';
@@ -59,6 +60,7 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
   const cartCount = useCartStore((s) => s.lines.reduce((n, l) => n + l.quantity, 0));
   const navigate = useNavigate();
   const t = useT();
+  const online = useOnline();
   // Stable across renders so the shortcut listener below is attached once.
   const modes = useMemo(
     () => MODES.filter((m) => !m.minRole || can(m.minRole)),
@@ -180,6 +182,14 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
         </div>
       </header>
 
+      {!online && (
+        <div
+          role="status"
+          className="no-print bg-amber-soft px-4 py-2 text-center text-sm text-amber sm:px-6"
+        >
+          {t('status.offlineBanner')}
+        </div>
+      )}
       <main className="flex-1 px-4 py-6 sm:px-6">{children}</main>
       <SessionTimeout />
     </div>

@@ -14,6 +14,7 @@ export const es: Messages = {
     connecting: 'Conectando',
     offline: 'Sin conexión',
     signOut: 'Cerrar sesión',
+    offlineBanner: 'Sin conexión. Puedes ver los productos, pero las ventas necesitan conexión.',
     dayMode: 'Modo día',
     nightShift: 'Modo noche',
   },
