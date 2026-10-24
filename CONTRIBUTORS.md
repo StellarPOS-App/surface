@@ -15,6 +15,11 @@ and GitHub activity, so it lists real accounts only.
 | [@praizehimm](https://github.com/praizehimm) | Instant, forgiving product search (#54) |
 | [@presidoclintonbased-alt](https://github.com/presidoclintonbased-alt) | Mobile order bar and bottom sheet (#55) |
 | [@abayomicornelius](https://github.com/abayomicornelius) | Safari fixes (viewport height, input zoom, clipboard) (#56) |
+| [@alansamdev](https://github.com/alansamdev) | Two-factor sign-in screens (#58) |
+| [@boluwacodes](https://github.com/boluwacodes) | Fixed leaks in the Orders export and modals (#59) |
+| [@Derinsolababy](https://github.com/Derinsolababy) | English, French and Spanish (#60) |
+| [@gideononiru](https://github.com/gideononiru) | Offline mode and installable app (#61) |
+| [@floraispretty](https://github.com/floraispretty) | Voice commands (#62) |
 
 ## Forks
 
