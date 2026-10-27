@@ -235,3 +235,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ for the Stellar ecosystem
+
+<!-- fix: issue #206 - [PERF-013] Excessive use of inline styles prevents CSS optimization -->
