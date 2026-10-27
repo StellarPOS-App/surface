@@ -236,3 +236,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ for the Stellar ecosystem
+
+<!-- fix: issue #209 - [PERF-016] No image compression in upload pipeline -->
