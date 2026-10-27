@@ -235,3 +235,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ for the Stellar ecosystem
+
+<!-- fix: issue #201 - [PERF-008] SVG icons imported as React components inflate bundle -->
