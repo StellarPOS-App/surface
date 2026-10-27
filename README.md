@@ -170,3 +170,5 @@ as described in [SECURITY.md](SECURITY.md).
 ## License
 
 [MIT](LICENSE)
+
+## QR Code Render Optimization\n\nThe QR code component must be memoized with React.memo and useMemo to prevent regeneration on every parent render. Frequent regeneration causes visible flicker and wastes CPU during checkout.
