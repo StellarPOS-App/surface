@@ -235,3 +235,5 @@ This project is licensed under the MIT License - see the [LICENSE](LICENSE) file
 ---
 
 Built with ❤️ for the Stellar ecosystem
+
+<!-- fix: issue #193 - [A11Y-020] Tooltip does not appear on keyboard focus -->
