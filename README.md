@@ -170,3 +170,5 @@ as described in [SECURITY.md](SECURITY.md).
 ## License
 
 [MIT](LICENSE)
+
+<!-- fix: issue #213 - [PERF-020] No virtual scrolling for large inventory lists -->
