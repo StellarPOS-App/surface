@@ -1,0 +1,25 @@
+{
+  "common": {
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "confirm": "Confirm",
+    "loading": "Loading…",
+    "error": "An error occurred",
+    "success": "Success"
+  },
+  "pos": {
+    "title": "Point of Sale",
+    "addItem": "Add Item",
+    "removeItem": "Remove Item",
+    "total": "Total",
+    "checkout": "Checkout",
+    "receipt": "Receipt",
+    "payment": "Payment"
+  },
+  "auth": {
+    "signIn": "Sign In",
+    "signOut": "Sign Out",
+    "wallet": "Connect Wallet"
+  }
+}
