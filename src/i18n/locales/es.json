@@ -1,0 +1,25 @@
+{
+  "common": {
+    "save": "Guardar",
+    "cancel": "Cancelar",
+    "delete": "Eliminar",
+    "confirm": "Confirmar",
+    "loading": "Cargando…",
+    "error": "Ocurrió un error",
+    "success": "Éxito"
+  },
+  "pos": {
+    "title": "Punto de Venta",
+    "addItem": "Agregar Artículo",
+    "removeItem": "Eliminar Artículo",
+    "total": "Total",
+    "checkout": "Pagar",
+    "receipt": "Recibo",
+    "payment": "Pago"
+  },
+  "auth": {
+    "signIn": "Iniciar Sesión",
+    "signOut": "Cerrar Sesión",
+    "wallet": "Conectar Billetera"
+  }
+}

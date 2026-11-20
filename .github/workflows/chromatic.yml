@@ -1,0 +1,35 @@
+name: Chromatic
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+concurrency:
+  group: chromatic-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  chromatic:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0  # Chromatic needs full git history for TurboSnap
+
+      - uses: actions/setup-node@v4
+        with:
+          node-version-file: .nvmrc
+          cache: npm
+
+      - run: npm ci
+
+      - name: Run Chromatic
+        uses: chromaui/action@v11
+        with:
+          projectToken: ${{ secrets.CHROMATIC_PROJECT_TOKEN }}
+          # Only rebuild stories whose dependency tree changed (requires full history above).
+          onlyChanged: true
+          # Fail the job if Chromatic detects unreviewed visual changes on PRs.
+          exitZeroOnChanges: false
+          exitOnceUploaded: false

@@ -1,43 +1,49 @@
-import { Routes, Route, Navigate } from 'react-router-dom'
-import { useAuthStore } from '@/stores/authStore'
+import { lazy, Suspense } from 'react';
+import { Navigate, Route, Routes } from 'react-router-dom';
+import AuthLayout from '@/components/layout/AuthLayout';
+import DashboardLayout from '@/components/layout/DashboardLayout';
+import ProtectedRoute from '@/components/ProtectedRoute';
+import LoadingSpinner from '@/components/ui/LoadingSpinner';
+import Login from '@/pages/auth/Login';
+import Register from '@/pages/auth/Register';
+import POSTerminal from '@/pages/pos/POSTerminal';
+import { useAuthStore } from '@/stores/authStore';
+import { useScheduleSettlementReport } from '@/hooks/useSettlementReport';
 
-// Layouts
-import DashboardLayout from '@/components/layout/DashboardLayout'
-import AuthLayout from '@/components/layout/AuthLayout'
+// The register loads with the app; back-office screens load on first visit.
+// Reports pulls in the charting library (~370 KB), which most till sessions
+// never need.
+const Dashboard = lazy(() => import('@/pages/dashboard/Dashboard'));
+const Inventory = lazy(() => import('@/pages/inventory/Inventory'));
+const Transactions = lazy(() => import('@/pages/transactions/Transactions'));
+const Customers = lazy(() => import('@/pages/customers/Customers'));
+const Settings = lazy(() => import('@/pages/settings/Settings'));
 
-// Pages
-import Dashboard from '@/pages/dashboard/Dashboard'
-import POSTerminal from '@/pages/pos/POSTerminal'
-import Inventory from '@/pages/inventory/Inventory'
-import Transactions from '@/pages/transactions/Transactions'
-import Customers from '@/pages/customers/Customers'
-import Settings from '@/pages/settings/Settings'
-import Login from '@/pages/auth/Login'
-import Register from '@/pages/auth/Register'
-
-// Components
-import ProtectedRoute from '@/components/ProtectedRoute'
-import LoadingSpinner from '@/components/ui/LoadingSpinner'
+const pageFallback = (
+  <div className="grid place-items-center py-24">
+    <LoadingSpinner size="lg" label="Loading screen" />
+  </div>
+);
 
 function App() {
-  const { isAuthenticated, isLoading } = useAuthStore()
+  const { isAuthenticated, isLoading } = useAuthStore();
+  useScheduleSettlementReport();
 
   if (isLoading) {
     return (
-      <div className="min-h-screen flex items-center justify-center">
+      <div className="min-h-app flex items-center justify-center">
         <LoadingSpinner size="lg" />
       </div>
-    )
+    );
   }
 
   return (
     <Routes>
-      {/* Public Routes */}
       <Route
         path="/auth/*"
         element={
           isAuthenticated ? (
-            <Navigate to="/dashboard" replace />
+            <Navigate to="/pos" replace />
           ) : (
             <AuthLayout>
               <Routes>
@@ -50,41 +56,28 @@ function App() {
         }
       />
 
-      {/* Protected Routes */}
       <Route
         path="/*"
         element={
           <ProtectedRoute>
             <DashboardLayout>
-              <Routes>
-                <Route path="dashboard" element={<Dashboard />} />
-                <Route path="pos" element={<POSTerminal />} />
-                <Route path="inventory" element={<Inventory />} />
-                <Route path="transactions" element={<Transactions />} />
-                <Route path="customers" element={<Customers />} />
-                <Route path="settings" element={<Settings />} />
-                <Route path="/" element={<Navigate to="/dashboard" replace />} />
-                <Route path="*" element={<Navigate to="/dashboard" replace />} />
-              </Routes>
+              <Suspense fallback={pageFallback}>
+                <Routes>
+                  <Route path="pos" element={<POSTerminal />} />
+                  <Route path="dashboard" element={<Dashboard />} />
+                  <Route path="inventory" element={<Inventory />} />
+                  <Route path="transactions" element={<Transactions />} />
+                  <Route path="customers" element={<Customers />} />
+                  <Route path="settings" element={<Settings />} />
+                  <Route path="*" element={<Navigate to="/pos" replace />} />
+                </Routes>
+              </Suspense>
             </DashboardLayout>
           </ProtectedRoute>
         }
       />
     </Routes>
-  )
+  );
 }
 
-export default App// Update 5
-// Update 10
-// Update 15
-// Update 20
-// Update 25
-// Update 30
-// Update 35
-// Update 40
-// Update 45
-// Update 50
-// Update 55
-// Update 60
-// Update 65
-// Update 70
+export default App;

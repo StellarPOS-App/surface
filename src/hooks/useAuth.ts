@@ -1,14 +1,15 @@
-// Hook implementation 4
-// Hook implementation 9
-// Hook implementation 14
-// Hook implementation 19
-// Hook implementation 24
-// Hook implementation 29
-// Hook implementation 34
-// Hook implementation 39
-// Hook implementation 44
-// Hook implementation 49
-// Hook implementation 54
-// Hook implementation 59
-// Hook implementation 64
-// Hook implementation 69
+import { useAuthStore } from '@/stores/authStore';
+import type { Role } from '@/types';
+
+const RANK: Record<Role, number> = { cashier: 0, manager: 1, admin: 2 };
+
+/** Session state plus role checks. `can('manager')` is true for managers and admins. */
+export function useAuth() {
+  const state = useAuthStore();
+  const role = state.user?.role;
+  return {
+    ...state,
+    role,
+    can: (min: Role) => (role ? RANK[role] >= RANK[min] : false),
+  };
+}

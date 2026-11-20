@@ -1,41 +1,45 @@
-import { defineConfig } from 'vite'
-import react from '@vitejs/plugin-react'
-import { resolve } from 'path'
+/// <reference types="vitest/config" />
+import react from '@vitejs/plugin-react';
+import { fileURLToPath } from 'node:url';
+import { defineConfig, loadEnv } from 'vite';
 
-// https://vitejs.dev/config/
-export default defineConfig({
-  plugins: [react()],
-  resolve: {
-    alias: {
-      '@': resolve(__dirname, './src'),
-      '@/components': resolve(__dirname, './src/components'),
-      '@/pages': resolve(__dirname, './src/pages'),
-      '@/hooks': resolve(__dirname, './src/hooks'),
-      '@/services': resolve(__dirname, './src/services'),
-      '@/stores': resolve(__dirname, './src/stores'),
-      '@/types': resolve(__dirname, './src/types'),
-      '@/utils': resolve(__dirname, './src/utils'),
-      '@/constants': resolve(__dirname, './src/constants'),
-      '@/styles': resolve(__dirname, './src/styles'),
-      '@/assets': resolve(__dirname, './src/assets')
-    }
-  },
-  server: {
-    port: 5173,
-    host: true
-  },
-  build: {
-    outDir: 'dist',
-    sourcemap: true,
-    rollupOptions: {
-      output: {
-        manualChunks: {
-          vendor: ['react', 'react-dom'],
-          router: ['react-router-dom'],
-          stellar: ['@stellar/stellar-sdk'],
-          ui: ['@headlessui/react', '@heroicons/react']
-        }
-      }
-    }
-  }
-})
+export default defineConfig(({ mode }) => {
+  const env = loadEnv(mode, process.cwd(), '');
+  // In development the API runs separately; proxy it so the app can use
+  // same-origin relative URLs and cookies/CORS never get in the way.
+  const apiTarget = env.VITE_DEV_API_TARGET || 'http://localhost:3000';
+
+  return {
+    plugins: [react()],
+    resolve: {
+      alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) },
+    },
+    server: {
+      port: 5173,
+      host: true,
+      proxy: {
+        '/api': { target: apiTarget, changeOrigin: true },
+        '/socket.io': { target: apiTarget, ws: true, changeOrigin: true },
+      },
+    },
+    build: {
+      outDir: 'dist',
+      sourcemap: true,
+      rollupOptions: {
+        output: {
+          manualChunks: {
+            react: ['react', 'react-dom', 'react-router-dom'],
+            data: ['@tanstack/react-query', 'zustand', 'socket.io-client'],
+          },
+        },
+      },
+    },
+    test: {
+      globals: true,
+      environment: 'jsdom',
+      setupFiles: ['./src/test/setup.ts'],
+      css: false,
+      coverage: { include: ['src/**/*.{ts,tsx}'], exclude: ['src/test/**', 'src/main.tsx'] },
+    },
+  };
+});

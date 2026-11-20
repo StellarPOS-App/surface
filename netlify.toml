@@ -1,0 +1,37 @@
+# Netlify build settings for the StellarPOS app.
+#
+# The API (StellarPOS-App/backend) is a long-running Node server with
+# WebSockets, so it is hosted elsewhere (Render, Railway, Fly.io, a VPS).
+# Point the app at it in Netlify: Site configuration > Environment variables
+#
+#   VITE_API_BASE_URL = https://<your-api-host>/api/v1
+#   VITE_SOCKET_URL   = https://<your-api-host>
+#
+# and set CLIENT_URL on the backend to this site's URL so CORS allows it.
+
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  # Node 18 is end-of-life and some build tools need 20+.
+  NODE_VERSION = "22"
+
+# Client-side routing: serve the app shell for any path that is not a file,
+# so refreshing /pos or /settings does not 404.
+[[redirects]]
+  from = "/*"
+  to = "/index.html"
+  status = 200
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    X-Frame-Options = "DENY"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
