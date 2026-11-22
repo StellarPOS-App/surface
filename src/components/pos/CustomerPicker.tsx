@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { toast } from 'sonner';
 import { useCustomers, useSaveCustomer } from '@/hooks/queries';
 import { useDebounce } from '@/hooks/useDebounce';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import type { Customer } from '@/types';
 import Button from '../ui/Button';
 import { Input } from '../ui/Field';
@@ -29,7 +30,7 @@ export default function CustomerPicker({
       toast.success(`Added ${customer.name}`);
       onPick(customer);
     } catch (err) {
-      toast.error((err as Error).message);
+      toast.error(publicErrorMessage(err));
     }
   };
 

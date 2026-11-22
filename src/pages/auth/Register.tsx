@@ -34,7 +34,7 @@ export default function Register() {
       await registerUser({ name, email, password });
       navigate('/pos', { replace: true });
     } catch {
-      // Message comes from the store.
+      // The store holds a fixed message. Never log the submitted password.
     }
   });
 

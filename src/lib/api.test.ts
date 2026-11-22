@@ -31,14 +31,14 @@ describe('api client', () => {
     expect(page.pagination.total).toBe(0);
   });
 
-  it('raises ApiError with the server message and validation details', async () => {
+  it('raises ApiError with a fixed message and never echoes untrusted server text', async () => {
     mockFetch({
       'POST /api/v1/products': {
         status: 400,
         body: {
           success: false,
-          error: 'Validation failed',
-          details: [{ field: 'sku', message: 'bad' }],
+          error: '<img src=x onerror="alert(1)">',
+          details: [{ field: 'sku', message: '<script>alert(1)</script>' }],
         },
       },
     });
@@ -46,9 +46,11 @@ describe('api client', () => {
     expect(err).toBeInstanceOf(ApiError);
     expect(err).toMatchObject({
       status: 400,
-      message: 'Validation failed',
-      details: [{ field: 'sku', message: 'bad' }],
+      message: 'Check the information you entered and try again.',
+      details: [{ field: 'sku', message: 'Check this field and try again.' }],
     });
+    expect(JSON.stringify(err)).not.toContain('<script>');
+    expect((err as Error).message).not.toContain('<img');
   });
 
   it('signs out when the server rejects the session', async () => {
@@ -59,7 +61,7 @@ describe('api client', () => {
         body: { success: false, error: 'Invalid or expired token' },
       },
     });
-    await expect(api.get('/auth/me')).rejects.toThrow('Invalid or expired token');
+    await expect(api.get('/auth/me')).rejects.toThrow('Your session has expired. Sign in again.');
     expect(useAuthStore.getState().isAuthenticated).toBe(false);
   });
 

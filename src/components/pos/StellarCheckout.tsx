@@ -15,10 +15,12 @@ import type { PaymentRequest, Transaction } from '@/types';
 import { copyText } from '@/lib/clipboard';
 import { buildPathPaymentUri } from '@/lib/pathPayment';
 import type { PathQuote } from '@/lib/pathPayment';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import { cn, formatAssetAmount, truncateMiddle } from '@/utils/helpers';
 import Button from '../ui/Button';
 import { Input } from '../ui/Field';
 import LoadingSpinner from '../ui/LoadingSpinner';
+import OperationReview, { type OperationDetailRow } from './OperationReview';
 
 const explorer = (network: string, hash: string) =>
   `https://stellar.expert/explorer/${network === 'mainnet' ? 'public' : 'testnet'}/tx/${hash}`;
@@ -31,13 +33,16 @@ const explorer = (network: string, hash: string) =>
 export default function StellarCheckout({
   sale,
   onPaid,
+  onCancel,
 }: {
   sale: Transaction;
   onPaid: (t: Transaction) => void;
+  onCancel?: () => void;
 }) {
   const store = useStoreSettings().data;
   const create = useCreatePaymentRequest();
   const [requestId, setRequestId] = useState<string | null>(null);
+  const [confirmed, setConfirmed] = useState(false);
   const { data: polled } = usePaymentRequest(requestId);
   const request: PaymentRequest | undefined = polled ?? create.data;
   const verify = useVerifyPaymentRequest();
@@ -75,11 +80,15 @@ export default function StellarCheckout({
     if (!store?.stellar.enabled) return;
     create.mutate(sale.id, {
       onSuccess: (r) => setRequestId(r.id),
-      onError: (err) => toast.error(err.message),
+      onError: (err) => toast.error(publicErrorMessage(err)),
     });
     // Create once per sale.
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [sale.id, store?.stellar.enabled]);
+
+  // Changing the source account, quote or request produces a different URI —
+  // the previous acknowledgement must not carry over to a different operation.
+  useEffect(() => setConfirmed(false), [activeUri]);
 
   useEffect(
     () =>
@@ -113,11 +122,58 @@ export default function StellarCheckout({
     return (
       <div className="grid place-items-center py-16">
         {create.isError ? (
-          <p className="text-signal">{create.error.message}</p>
+          <p className="text-signal">{publicErrorMessage(create.error)}</p>
         ) : (
           <LoadingSpinner size="lg" label="Preparing QR" />
         )}
       </div>
+    );
+  }
+
+  const assetLabel = (asset: { assetCode: string; assetIssuer: string | null }) =>
+    `${asset.assetCode}${asset.assetIssuer ? ` (${truncateMiddle(asset.assetIssuer, 6, 6)})` : ' (native)'}`;
+
+  // Everything the customer's wallet is about to sign, in one reviewable list.
+  const operationRows: OperationDetailRow[] = [
+    { label: 'Operation', value: selectedQuote ? 'Path payment (strict receive)' : 'Payment (SEP-7)' },
+    { label: 'Network', value: store.stellar.network },
+    { label: 'Destination', value: request.destination },
+    {
+      label: 'Merchant receives',
+      value: `${formatAssetAmount(request.amount)} ${assetLabel({
+        assetCode: request.assetCode,
+        assetIssuer: request.assetIssuer,
+      })}`,
+    },
+    ...(selectedQuote
+      ? [
+          { label: "Customer's account", value: sourceAccount },
+          {
+            label: 'Customer sends up to',
+            value: `${formatAssetAmount(selectedQuote.sendMax)} ${assetLabel(selectedQuote.sourceAsset)}`,
+          },
+          {
+            label: 'Conversion path',
+            value: selectedQuote.path.length
+              ? `${selectedQuote.path.map((a) => a.assetCode).join(' → ')} → ${request.assetCode}`
+              : `Direct → ${request.assetCode}`,
+          },
+        ]
+      : []),
+    { label: 'Memo', value: request.memo || '(none)' },
+    { label: 'Expires', value: new Date(request.expiresAt).toLocaleString() },
+  ];
+
+  // No QR code, payment link or wallet URI is exposed until the operation has
+  // been reviewed and explicitly acknowledged.
+  if (!confirmed) {
+    return (
+      <OperationReview
+        rows={operationRows}
+        network={store.stellar.network}
+        onConfirm={() => setConfirmed(true)}
+        onCancel={onCancel}
+      />
     );
   }
 
@@ -288,6 +344,9 @@ export default function StellarCheckout({
           >
             Open in wallet
           </a>
+          <Button size="sm" variant="ghost" onClick={() => setConfirmed(false)}>
+            Review details
+          </Button>
         </div>
 
         {request.status === 'pending' && (
@@ -299,7 +358,7 @@ export default function StellarCheckout({
                 { id: request.id, txHash: hash.trim() },
                 {
                   onSuccess: (r) => onPaid(r.transaction),
-                  onError: (err) => toast.error(err.message),
+                  onError: (err) => toast.error(publicErrorMessage(err)),
                 },
               );
             }}

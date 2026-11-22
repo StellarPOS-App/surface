@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/Field';
 import { api } from '@/lib/api';
 import { copyText } from '@/lib/clipboard';
 import { downloadFile } from '@/lib/csv';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import { useAuthStore } from '@/stores/authStore';
 
 interface Status {
@@ -39,7 +40,7 @@ export default function TwoFactorSettings() {
   const start = useMutation({
     mutationFn: () => api.post<{ secret: string; otpauthUrl: string }>('/auth/2fa/setup'),
     onSuccess: setSetup,
-    onError: (e) => toast.error(e.message),
+    onError: (e) => toast.error(publicErrorMessage(e)),
   });
   const enable = useMutation({
     mutationFn: () => api.post<{ recoveryCodes: string[] }>('/auth/2fa/enable', { code }),
@@ -49,7 +50,7 @@ export default function TwoFactorSettings() {
       done(true);
       toast.success('Two-factor sign-in is on');
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e) => toast.error(publicErrorMessage(e)),
   });
   const disable = useMutation({
     mutationFn: () => api.post('/auth/2fa/disable', { password, code }),
@@ -57,7 +58,7 @@ export default function TwoFactorSettings() {
       done(false);
       toast.success('Two-factor sign-in is off');
     },
-    onError: (e) => toast.error(e.message),
+    onError: (e) => toast.error(publicErrorMessage(e)),
   });
 
   if (!status) return null;

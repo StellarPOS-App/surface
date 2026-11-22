@@ -14,6 +14,7 @@ import {
 } from '@/hooks/queries';
 import { useFormatMoney } from '@/hooks/useFormatMoney';
 import { METHOD_LABEL } from '@/lib/pos';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import type { PaymentMethod, Summary } from '@/types';
 import { cn } from '@/utils/helpers';
 
@@ -159,7 +160,7 @@ export default function Dashboard() {
         <div>
           {summary.isLoading && <LoadingSpinner size="lg" />}
           {summary.isError && (
-            <EmptyState title="Report unavailable">{summary.error.message}</EmptyState>
+            <EmptyState title="Report unavailable">{publicErrorMessage(summary.error)}</EmptyState>
           )}
           {summary.data && (
             <ZReport summary={summary.data} label={RANGES.find((r) => r.days === days)!.label} />

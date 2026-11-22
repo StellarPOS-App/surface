@@ -16,6 +16,7 @@ import {
   useWallet,
 } from '@/hooks/queries';
 import { useAuth } from '@/hooks/useAuth';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import { useThemeStore } from '@/stores/themeStore';
 import { LANGUAGES, useLanguageStore, useT, type Language } from '@/i18n';
 import ReceiptSettings from './ReceiptSettings';
@@ -68,7 +69,7 @@ function Profile() {
           setNext('');
           toast.success('Profile saved');
         },
-        onError: (err) => toast.error(err.message),
+        onError: (err) => toast.error(publicErrorMessage(err)),
       },
     );
   };
@@ -154,7 +155,7 @@ function Wallet() {
               <LoadingSpinner />
             </div>
           )}
-          {isError && <p className="p-4 text-sm text-signal">{error.message}</p>}
+          {isError && <p className="p-4 text-sm text-signal">{publicErrorMessage(error)}</p>}
           <ul className="divide-y divide-ink-line">
             {data?.balances.map((b) => (
               <li
@@ -215,7 +216,7 @@ function Staff() {
                         { id: u.id, role: e.target.value as Role },
                         {
                           onSuccess: () => toast.success(`${u.name} is now ${e.target.value}`),
-                          onError: (err) => toast.error(err.message),
+                          onError: (err) => toast.error(publicErrorMessage(err)),
                         },
                       )
                     }
@@ -254,7 +255,7 @@ function Staff() {
                   setAdding(false);
                   setForm({ name: '', email: '', password: '', role: 'cashier' });
                 },
-                onError: (err) => toast.error(err.message),
+                onError: (err) => toast.error(publicErrorMessage(err)),
               })
             }
           >

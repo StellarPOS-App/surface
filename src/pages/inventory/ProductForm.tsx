@@ -6,6 +6,7 @@ import Button from '@/components/ui/Button';
 import { Input, Textarea } from '@/components/ui/Field';
 import Modal from '@/components/ui/Modal';
 import { useCategories, useDeleteProduct, useSaveProduct } from '@/hooks/queries';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import type { Product } from '@/types';
 import { parseCents } from '@/utils/helpers';
 
@@ -68,7 +69,7 @@ export default function ProductForm({
       toast.success(editing ? 'Product updated' : 'Product added');
       onClose();
     } catch (err) {
-      toast.error((err as Error).message);
+      toast.error(publicErrorMessage(err));
     }
   });
 
@@ -83,7 +84,7 @@ export default function ProductForm({
       );
       onClose();
     } catch (err) {
-      toast.error((err as Error).message);
+      toast.error(publicErrorMessage(err));
     }
   };
 

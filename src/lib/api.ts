@@ -1,6 +1,21 @@
 import { useAuthStore } from '@/stores/authStore';
+import { staticErrorMessage } from './errorMessages';
 
 const BASE = import.meta.env.VITE_API_BASE_URL || '/api/v1';
+
+/** Keep validation field names, but replace untrusted server messages. */
+function safeDetails(raw: unknown): { field: string; message: string }[] | undefined {
+  if (!Array.isArray(raw)) return undefined;
+  return raw
+    .filter((entry): entry is Record<string, unknown> => typeof entry === 'object' && entry !== null)
+    .map((entry) => ({
+      field:
+        typeof entry.field === 'string' && /^[a-zA-Z0-9_.-]{1,64}$/.test(entry.field)
+          ? entry.field
+          : 'field',
+      message: staticErrorMessage(400, 'validation'),
+    }));
+}
 
 export class ApiError extends Error {
   constructor(
@@ -28,8 +43,8 @@ function buildUrl(path: string, query?: Query): string {
 
 /**
  * Fetch wrapper for the StellarPOS API. Unwraps the `{ success, data }`
- * envelope, raises ApiError with the server's message, and signs the user
- * out when the session token is rejected.
+ * envelope, raises ApiError with a fixed user-facing message (never the
+ * server's untrusted text), and signs the user out when the token is rejected.
  */
 export async function request<T>(
   method: string,
@@ -58,11 +73,7 @@ export async function request<T>(
     if (res.status === 401 && token && !path.startsWith('/auth/login')) {
       useAuthStore.getState().logout();
     }
-    throw new ApiError(
-      payload?.error ?? `Request failed (${res.status})`,
-      res.status,
-      payload?.details,
-    );
+    throw new ApiError(staticErrorMessage(res.status), res.status, safeDetails(payload?.details));
   }
   return (opts.raw ? payload : payload.data) as T;
 }

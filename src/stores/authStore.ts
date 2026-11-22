@@ -1,6 +1,8 @@
 import { create } from 'zustand';
 import { createJSONStorage, persist } from 'zustand/middleware';
 import { api } from '@/lib/api';
+import type { ErrorContext } from '@/lib/errorMessages';
+import { publicErrorMessage, reportError } from '@/lib/safeErrors';
 import type { LoginCredentials, RegisterPayload, Session, TwoFactorChallenge, User } from '@/types';
 
 interface AuthState {
@@ -24,7 +26,7 @@ interface AuthState {
 export const useAuthStore = create<AuthState>()(
   persist(
     (set) => {
-      const startSession = async (path: string, body: unknown) => {
+      const startSession = async (path: string, body: unknown, context: ErrorContext = 'auth') => {
         set({ error: null });
         try {
           const res = await api.post<Session | TwoFactorChallenge>(path, body);
@@ -34,7 +36,10 @@ export const useAuthStore = create<AuthState>()(
           }
           set({ user: res.user, token: res.token, isAuthenticated: true, challenge: null });
         } catch (err) {
-          set({ error: (err as Error).message });
+          // `body` holds a password or one-time code: never log it. Only the
+          // endpoint and a redacted error class are recorded.
+          reportError('auth', err, { path });
+          set({ error: publicErrorMessage(err, context) });
           throw err;
         }
       };
@@ -45,14 +50,14 @@ export const useAuthStore = create<AuthState>()(
         isLoading: true,
         error: null,
         challenge: null,
-        login: (credentials) => startSession('/auth/login', credentials),
+        login: (credentials) => startSession('/auth/login', credentials, 'auth'),
         verifyTwoFactor: async (code) => {
           const challenge = useAuthStore.getState().challenge;
           if (!challenge) throw new Error('Sign in with your password first');
-          await startSession('/auth/2fa/verify', { challenge, code });
+          await startSession('/auth/2fa/verify', { challenge, code }, 'twoFactor');
         },
         cancelTwoFactor: () => set({ challenge: null, error: null }),
-        register: (payload) => startSession('/auth/register', payload),
+        register: (payload) => startSession('/auth/register', payload, 'register'),
         logout: () => set({ user: null, token: null, isAuthenticated: false, challenge: null }),
         setUser: (user) => set({ user }),
         clearError: () => set({ error: null }),
