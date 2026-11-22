@@ -343,7 +343,7 @@ export default function Settings() {
       <Section title="Receipts" description="Header, footer and what prints. Saved on this till.">
         <ReceiptSettings />
       </Section>
-      {can('manage_settings') && (
+      {can('manager') && (
         <Section
           title="Webhook notifications"
           description="Receive real-time HTTPS POST callbacks when transactions are confirmed, voided, or refunded."

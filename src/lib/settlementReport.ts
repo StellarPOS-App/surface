@@ -14,7 +14,7 @@ export interface SettlementReportRow {
 }
 
 export interface SettlementReport {
-  date: string;          // YYYY-MM-DD in merchant timezone
+  date: string; // YYYY-MM-DD in merchant timezone
   timezone: string;
   currency: string;
   transactionCount: number;

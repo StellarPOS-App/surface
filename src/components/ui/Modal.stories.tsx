@@ -40,14 +40,17 @@ function ModalHarness(props: Partial<React.ComponentProps<typeof Modal>>) {
 }
 
 export const Default: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => <ModalHarness />,
 };
 
 export const WithEyebrow: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => <ModalHarness eyebrow="Transaction #4821" title="Void this sale?" />,
 };
 
 export const WithFooter: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => (
     <ModalHarness
       title="Confirm refund"
@@ -62,26 +65,27 @@ export const WithFooter: Story = {
 };
 
 export const Small: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => <ModalHarness size="sm" title="Quick note" />,
 };
 
 export const Large: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => <ModalHarness size="lg" title="End-of-day report" />,
 };
 
 export const Drawer: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => <ModalHarness drawer title="Payment details" />,
 };
 
 export const Locked: Story = {
+  args: { open: false, onClose: () => undefined, title: '', children: '' },
   render: () => (
-    <ModalHarness
-      locked
-      title="Awaiting payment…"
-    >
+    <ModalHarness locked title="Awaiting payment…">
       <p className="text-sm text-ink-2">
-        Present the QR code to your customer. This dialog cannot be dismissed until the
-        transaction completes or times out.
+        Present the QR code to your customer. This dialog cannot be dismissed until the transaction
+        completes or times out.
       </p>
     </ModalHarness>
   ),

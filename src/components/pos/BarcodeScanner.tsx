@@ -1,4 +1,3 @@
-import { ScanBarcode } from 'lucide-react';
 import { useEffect } from 'react';
 import { toast } from 'sonner';
 import { barcodeScannerSupported, useBarcodeScanner } from '@/hooks/useBarcodeScanner';
@@ -56,7 +55,7 @@ export default function BarcodeScanner({
     >
       <div className="space-y-4">
         {/* Camera viewfinder */}
-        <div className="relative overflow-hidden rounded-xl bg-ink aspect-[4/3]">
+        <div className="relative aspect-[4/3] overflow-hidden rounded-xl bg-ink">
           <video
             ref={videoRef}
             autoPlay
@@ -86,10 +85,7 @@ export default function BarcodeScanner({
         </div>
 
         <p
-          className={cn(
-            'text-center text-sm',
-            status === 'scanning' ? 'text-ink-2' : 'text-ink-3',
-          )}
+          className={cn('text-center text-sm', status === 'scanning' ? 'text-ink-2' : 'text-ink-3')}
         >
           {status === 'scanning'
             ? t('pos.barcodeScanning')

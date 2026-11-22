@@ -46,16 +46,20 @@ export const Amber: Story = {
 };
 
 export const AllTones: Story = {
+  args: { tone: 'neutral', children: 'Badge' },
   render: () => (
     <div className="flex flex-wrap gap-2">
       {(['neutral', 'ink', 'cash', 'card', 'lumen', 'signal', 'amber'] as const).map((tone) => (
-        <Badge key={tone} tone={tone}>{tone}</Badge>
+        <Badge key={tone} tone={tone}>
+          {tone}
+        </Badge>
       ))}
     </div>
   ),
 };
 
 export const TransactionStatuses: Story = {
+  args: { tone: 'neutral', children: 'Badge' },
   render: () => (
     <div className="flex gap-2">
       <StatusBadge status="pending" />
@@ -67,6 +71,7 @@ export const TransactionStatuses: Story = {
 };
 
 export const PaymentMethods: Story = {
+  args: { tone: 'neutral', children: 'Badge' },
   render: () => (
     <div className="flex gap-2">
       <MethodBadge method="cash" />

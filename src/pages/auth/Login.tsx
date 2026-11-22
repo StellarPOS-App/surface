@@ -1,10 +1,11 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { useState, type FormEvent } from 'react';
 import { useForm } from 'react-hook-form';
-import { Link, useLocation, useNavigate } from 'react-router-dom';
+import { Link, useLocation, useNavigate, useSearchParams } from 'react-router-dom';
 import { z } from 'zod';
 import Button from '@/components/ui/Button';
 import { Input } from '@/components/ui/Field';
+import { safeRedirectPath } from '@/lib/safeRedirect';
 import { useAuthStore } from '@/stores/authStore';
 import { useT } from '@/i18n';
 
@@ -18,7 +19,15 @@ export default function Login() {
   const login = useAuthStore((s) => s.login);
   const serverError = useAuthStore((s) => s.error);
   const navigate = useNavigate();
-  const from = (useLocation().state as { from?: string } | null)?.from ?? '/pos';
+  const location = useLocation();
+  const [searchParams] = useSearchParams();
+  // A link can ask for a destination via ?returnUrl=; ProtectedRoute also
+  // remembers one in history state. Neither is trusted until it passes the
+  // same-origin check, otherwise a crafted link could send a signed-in user
+  // (and their session) to an attacker-controlled site.
+  const from = safeRedirectPath(
+    searchParams.get('returnUrl') ?? (location.state as { from?: string } | null)?.from,
+  );
   const {
     register,
     handleSubmit,

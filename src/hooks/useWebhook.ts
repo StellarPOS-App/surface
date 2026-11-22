@@ -29,8 +29,7 @@ interface SaveWebhookInput {
 export function useSaveWebhookConfig() {
   const qc = useQueryClient();
   return useMutation({
-    mutationFn: (input: SaveWebhookInput) =>
-      api.put<WebhookConfig>('/store/webhook', input),
+    mutationFn: (input: SaveWebhookInput) => api.put<WebhookConfig>('/store/webhook', input),
     onSuccess: (data) => {
       qc.setQueryData(WEBHOOK_KEY, data);
     },

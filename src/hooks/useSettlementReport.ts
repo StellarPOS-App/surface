@@ -2,7 +2,7 @@ import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query';
 import { useEffect, useRef } from 'react';
 import { toast } from 'sonner';
 import { api } from '@/lib/api';
-import { generateAndSendSettlementReport, toLocalDate } from '@/lib/settlementReport';
+import { generateAndSendSettlementReport } from '@/lib/settlementReport';
 import { useStoreSettings } from '@/hooks/queries';
 
 export interface SettlementConfig {

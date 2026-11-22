@@ -39,7 +39,7 @@ export const fr: Messages = {
     barcodeCameraFeed: 'Viseur caméra',
     barcodeScanning: 'Pointez la caméra sur un code-barres',
     barcodeRequesting: 'Accès caméra en cours…',
-    barcodeDenied: "Accès caméra refusé. Autorisez-le dans les paramètres du navigateur.",
+    barcodeDenied: 'Accès caméra refusé. Autorisez-le dans les paramètres du navigateur.',
     barcodeIdle: 'Scanner prêt',
     barcodeFound: '{name} ajouté',
     barcodeNotFound: 'Aucun produit ne correspond au code "{code}"',

@@ -23,7 +23,10 @@ const schema = z.object({
   description: z.string().max(1000).optional(),
   active: z.boolean(),
 });
-type Form = z.infer<typeof schema>;
+// zod 4's `coerce` accepts unknown input but produces numbers, so react-hook-form
+// needs both the input (fields) and the transformed output (submit values).
+type FormInput = z.input<typeof schema>;
+type Form = z.output<typeof schema>;
 
 export default function ProductForm({
   product,
@@ -42,7 +45,7 @@ export default function ProductForm({
     register,
     handleSubmit,
     formState: { errors },
-  } = useForm<Form>({
+  } = useForm<FormInput, unknown, Form>({
     resolver: zodResolver(schema),
     values: {
       name: product?.name ?? '',

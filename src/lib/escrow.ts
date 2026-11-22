@@ -6,12 +6,9 @@
  * decision to the checkout UI.
  */
 
-const THRESHOLD_XLM = Number(
-  import.meta.env.VITE_ESCROW_THRESHOLD_XLM ?? '500',
-);
+const THRESHOLD_XLM = Number(import.meta.env.VITE_ESCROW_THRESHOLD_XLM ?? '500');
 
-const TURRET_ENDPOINT: string =
-  import.meta.env.VITE_TURRET_ENDPOINT ?? '';
+const TURRET_ENDPOINT: string = import.meta.env.VITE_TURRET_ENDPOINT ?? '';
 
 /** True when the environment is configured for Turrets escrow. */
 export function escrowAvailable(): boolean {
@@ -27,11 +24,7 @@ export function shouldUseEscrow(amountXlm: number): boolean {
 }
 
 export type EscrowStatus =
-  | 'pending_customer'
-  | 'pending_merchant'
-  | 'releasing'
-  | 'released'
-  | 'refunded';
+  'pending_customer' | 'pending_merchant' | 'releasing' | 'released' | 'refunded';
 
 export interface EscrowState {
   escrowId: string;

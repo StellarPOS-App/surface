@@ -16,6 +16,9 @@ const ASSETS = `stellarpos-assets-${VERSION}`;
 const DATA = `stellarpos-data-${VERSION}`;
 const SHELL_URLS = ['/', '/index.html', '/manifest.webmanifest', '/favicon.svg', '/icon-192.png'];
 const CACHED_API = [/\/api\/v1\/store$/, /\/api\/v1\/products\/catalog$/, /\/api\/v1\/products\/categories$/];
+// Screens with payout details are never written to the offline shell cache:
+// a shared till must not be able to replay them after someone logs out.
+const SENSITIVE_PATH = /^\/(auth|settings|transactions)(\/|$)/;
 
 self.addEventListener('install', (event) => {
   event.waitUntil(caches.open(SHELL).then((c) => c.addAll(SHELL_URLS)).then(() => self.skipWaiting()));
@@ -41,8 +44,10 @@ self.addEventListener('fetch', (event) => {
     event.respondWith(
       fetch(req)
         .then((res) => {
-          const copy = res.clone();
-          caches.open(SHELL).then((c) => c.put('/index.html', copy));
+          if (!SENSITIVE_PATH.test(url.pathname)) {
+            const copy = res.clone();
+            caches.open(SHELL).then((c) => c.put('/index.html', copy));
+          }
           return res;
         })
         .catch(() => caches.match('/index.html')),

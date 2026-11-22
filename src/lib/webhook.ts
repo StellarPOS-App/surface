@@ -13,10 +13,7 @@ export interface WebhookConfig {
   enabled: boolean;
 }
 
-export type WebhookEvent =
-  | 'transaction.completed'
-  | 'transaction.voided'
-  | 'transaction.refunded';
+export type WebhookEvent = 'transaction.completed' | 'transaction.voided' | 'transaction.refunded';
 
 export const WEBHOOK_EVENTS: { value: WebhookEvent; label: string }[] = [
   { value: 'transaction.completed', label: 'Transaction completed' },

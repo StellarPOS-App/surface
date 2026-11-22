@@ -6,42 +6,6 @@ on:
   pull_request:
     branches: [main, dev]
 
-jobs:
-  build:
-    runs-on: ubuntu-latest
-
-    steps:
-      - uses: actions/checkout@v4
-
-      - name: Set up Node.js
-        uses: actions/setup-node@v4
-        with:
-          node-version: '20'
-
-      - name: Cache node_modules
-        uses: actions/cache@v4
-        id: npm-cache
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-
-
-      - name: Install dependencies
-        if: steps.npm-cache.outputs.cache-hit != 'true'
-        run: npm ci
-
-      - name: Type check
-        run: npm run type-check
-
-      - name: Lint
-        run: npm run lint
-
-      - name: Build
-        run: npm run build
-    branches: [main]
-  pull_request:
-
 concurrency:
   group: ci-${{ github.ref }}
   cancel-in-progress: true
@@ -54,24 +18,31 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version-file: .nvmrc
-      - name: Cache node_modules
-        id: cache-node-modules
-        uses: actions/cache@v4
-        with:
-          path: node_modules
-          key: ${{ runner.os }}-node-modules-${{ hashFiles('package-lock.json') }}
-          restore-keys: |
-            ${{ runner.os }}-node-modules-
-      - name: Install dependencies
-        if: steps.cache-node-modules.outputs.cache-hit != 'true'
-        run: npm ci
           cache: npm
-      - run: npm ci
-      - run: npm run lint
-      - run: npm run format:check
-      - run: npm run type-check
-      - run: npm test -- --coverage
-      - run: npm run build
+
+      - name: Install dependencies
+        run: npm ci
+
+      # Fails the build on high/critical advisories so a vulnerable dependency
+      # cannot be merged unnoticed. Moderate findings are tracked by Dependabot.
+      - name: Audit dependencies
+        run: npm run audit
+
+      - name: Lint
+        run: npm run lint
+
+      - name: Check formatting
+        run: npm run format:check
+
+      - name: Type check
+        run: npm run type-check
+
+      - name: Test
+        run: npm test -- --coverage
+
+      - name: Build
+        run: npm run build
+
       - uses: actions/upload-artifact@v4
         with:
           name: surface-dist
