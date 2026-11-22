@@ -84,6 +84,15 @@ export function initials(name: string): string {
 
 export const isEmail = (value: string) => /^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(value);
 
-/** Tax on cents in basis points, rounded half up (mirrors the backend). */
+/**
+ * Tax on cents in basis points, rounded half up (mirrors the backend).
+ *
+ * Formula: floor((amountCents × rateBps + 5000) / 10000)
+ * The +5000 bias implements half-up rounding at the 0.5-cent boundary.
+ *
+ * @param amountCents - Taxable amount in integer cents (post-discount).
+ * @param rateBps     - Tax rate in basis points (1% = 100 bps, 10% = 1000 bps).
+ * @returns Tax amount in integer cents.
+ */
 export const taxCents = (amountCents: number, rateBps: number) =>
   Math.floor((amountCents * rateBps + 5_000) / 10_000);
