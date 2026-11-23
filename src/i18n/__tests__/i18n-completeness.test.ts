@@ -5,7 +5,7 @@ import { defaultLocale, locales } from '../locales';
 function collectKeys(obj: unknown, prefix = ''): string[] {
   if (typeof obj !== 'object' || obj === null) return [prefix];
   return Object.entries(obj as Record<string, unknown>).flatMap(([k, v]) =>
-    collectKeys(v, prefix ? `${prefix}.${k}` : k)
+    collectKeys(v, prefix ? `${prefix}.${k}` : k),
   );
 }
 

@@ -39,7 +39,7 @@ describe('buildReport', () => {
   it('counts only completed transactions', () => {
     const txs = [
       makeTx({ status: 'completed' }),
-      makeTx({ status: 'failed', completedAt: null }),
+      makeTx({ status: 'void', completedAt: null }),
       makeTx({ status: 'pending', completedAt: null }),
     ];
     const report = buildReport(txs, '2024-01-15', 'UTC', 'USD');
@@ -49,7 +49,13 @@ describe('buildReport', () => {
   it('sums gross revenue, tax and discounts across all completed transactions', () => {
     const txs = [
       makeTx({ totalCents: 1000, taxCents: 80, discountCents: 50, paidCents: 1000 }),
-      makeTx({ totalCents: 2000, taxCents: 160, discountCents: 100, paidCents: 2000, reference: 'REF-002' }),
+      makeTx({
+        totalCents: 2000,
+        taxCents: 160,
+        discountCents: 100,
+        paidCents: 2000,
+        reference: 'REF-002',
+      }),
     ];
     const report = buildReport(txs, '2024-01-15', 'UTC', 'USD');
     expect(report.grossRevenueCents).toBe(3000);

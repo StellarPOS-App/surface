@@ -4,7 +4,7 @@ export type ScannerStatus = 'idle' | 'requesting' | 'scanning' | 'denied' | 'uns
 
 export interface UseBarcodeScanner {
   status: ScannerStatus;
-  videoRef: React.RefObject<HTMLVideoElement | null>;
+  videoRef: React.RefObject<HTMLVideoElement>;
   start: () => void;
   stop: () => void;
 }
@@ -23,7 +23,7 @@ export function barcodeScannerSupported(): boolean {
  */
 export function useBarcodeScanner(onDetected: (value: string) => void): UseBarcodeScanner {
   const [status, setStatus] = useState<ScannerStatus>('idle');
-  const videoRef = useRef<HTMLVideoElement | null>(null);
+  const videoRef = useRef<HTMLVideoElement>(null);
   const streamRef = useRef<MediaStream | null>(null);
   const rafRef = useRef<number | null>(null);
   const detectorRef = useRef<InstanceType<typeof BarcodeDetector> | null>(null);
@@ -51,7 +51,11 @@ export function useBarcodeScanner(onDetected: (value: string) => void): UseBarco
     setStatus('requesting');
     try {
       const stream = await navigator.mediaDevices.getUserMedia({
-        video: { facingMode: { ideal: 'environment' }, width: { ideal: 1280 }, height: { ideal: 720 } },
+        video: {
+          facingMode: { ideal: 'environment' },
+          width: { ideal: 1280 },
+          height: { ideal: 720 },
+        },
       });
       streamRef.current = stream;
       if (videoRef.current) {
@@ -62,9 +66,15 @@ export function useBarcodeScanner(onDetected: (value: string) => void): UseBarco
       if (!detectorRef.current) {
         detectorRef.current = new BarcodeDetector({
           formats: [
-            'ean_13', 'ean_8', 'upc_a', 'upc_e',
-            'code_128', 'code_39', 'code_93',
-            'qr_code', 'data_matrix',
+            'ean_13',
+            'ean_8',
+            'upc_a',
+            'upc_e',
+            'code_128',
+            'code_39',
+            'code_93',
+            'qr_code',
+            'data_matrix',
           ],
         });
       }
@@ -99,7 +109,12 @@ export function useBarcodeScanner(onDetected: (value: string) => void): UseBarco
   }, []);
 
   // Clean up on unmount.
-  useEffect(() => () => { stop(); }, [stop]);
+  useEffect(
+    () => () => {
+      stop();
+    },
+    [stop],
+  );
 
   return { status, videoRef, start, stop };
 }

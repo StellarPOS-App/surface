@@ -33,9 +33,7 @@ export async function findStrictReceivePaths(opts: {
 }): Promise<PathQuote[]> {
   const { horizonUrl, sourceAccount, destinationAsset, destinationAmount } = opts;
 
-  const destCode = destinationAsset.assetIssuer
-    ? destinationAsset.assetCode
-    : 'native';
+  const destCode = destinationAsset.assetIssuer ? destinationAsset.assetCode : 'native';
   const params = new URLSearchParams({
     source_account: sourceAccount,
     destination_asset_type: destinationAsset.assetIssuer ? 'credit_alphanum12' : 'native',
@@ -117,10 +115,7 @@ export function buildPathPaymentUri(opts: {
   });
 
   if (path.length > 0) {
-    params.set(
-      'path',
-      path.map(assetParam).join(','),
-    );
+    params.set('path', path.map(assetParam).join(','));
   }
 
   return `web+stellar:pay?${params.toString()}`;

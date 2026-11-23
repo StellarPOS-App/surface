@@ -35,3 +35,26 @@
   for = "/assets/*"
   [headers.values]
     Cache-Control = "public, max-age=31536000, immutable"
+
+# Screens holding merchant payout details, and the sign-in flow itself, must
+# not survive in the browser's back/forward cache after logout. The app shell
+# is shared by every client-side route, so it is marked no-store as well.
+[[headers]]
+  for = "/index.html"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/settings*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/auth*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"
+
+[[headers]]
+  for = "/transactions*"
+  [headers.values]
+    Cache-Control = "no-store, max-age=0, must-revalidate"

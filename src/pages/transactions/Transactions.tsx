@@ -188,10 +188,7 @@ function Detail({ id }: { id: string }) {
               <Button variant="secondary" onClick={() => setShowInvoice(false)}>
                 Close
               </Button>
-              <Button
-                icon={<Printer className="h-4 w-4" />}
-                onClick={() => window.print()}
-              >
+              <Button icon={<Printer className="h-4 w-4" />} onClick={() => window.print()}>
                 Print / Save PDF
               </Button>
             </>

@@ -55,10 +55,7 @@ const statusLabel: Record<TransactionStatus, string> = {
 };
 
 export const StatusBadge = ({ status }: { status: TransactionStatus }) => (
-  <Badge
-    tone={statusTone[status]}
-    aria-label={`Transaction status: ${statusLabel[status]}`}
-  >
+  <Badge tone={statusTone[status]} aria-label={`Transaction status: ${statusLabel[status]}`}>
     {statusLabel[status]}
   </Badge>
 );

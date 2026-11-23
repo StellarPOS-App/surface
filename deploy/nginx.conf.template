@@ -32,7 +32,21 @@ server {
     add_header Cache-Control "public, immutable";
   }
 
-  # Client-side routing: unknown paths serve the app shell.
+  # Screens with payout/bank details and the sign-in flow must never be kept
+  # in a browser's back/forward cache: a signed-out user pressing Back must
+  # not see the previous user's data.
+  location ~ ^/(auth|settings|transactions)(/|$) {
+    try_files $uri /index.html;
+    add_header Cache-Control "no-store, max-age=0, must-revalidate" always;
+    add_header Pragma "no-cache" always;
+  }
+
+  # The app shell is shared by every client-side route, so it is no-store too.
+  location = /index.html {
+    add_header Cache-Control "no-store, max-age=0, must-revalidate" always;
+  }
+
+  # Other client-side routes: unknown paths serve the app shell.
   location / {
     try_files $uri /index.html;
     add_header Cache-Control "no-cache";

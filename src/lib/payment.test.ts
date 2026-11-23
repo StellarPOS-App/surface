@@ -229,7 +229,7 @@ describe('computeTotals', () => {
     const lines = [
       { product: makeProduct({ priceCents: 100 }), quantity: 5 },
       { product: makeProduct({ priceCents: 200 }), quantity: 3 },
-      { product: makeProduct({ priceCents: 50  }), quantity: 10 },
+      { product: makeProduct({ priceCents: 50 }), quantity: 10 },
     ];
     expect(computeTotals(lines, 0, 0).itemCount).toBe(18);
   });

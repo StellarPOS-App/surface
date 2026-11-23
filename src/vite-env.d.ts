@@ -9,3 +9,16 @@ interface ImportMetaEnv {
 interface ImportMeta {
   readonly env: ImportMetaEnv;
 }
+
+// The Shape Detection API is not part of lib.dom yet.
+interface BarcodeDetectorOptions {
+  formats: string[];
+}
+interface DetectedBarcode {
+  rawValue: string;
+  boundingBox: DOMRectReadOnly;
+}
+declare class BarcodeDetector {
+  constructor(options?: BarcodeDetectorOptions);
+  detect(source: CanvasImageSource): Promise<DetectedBarcode[]>;
+}

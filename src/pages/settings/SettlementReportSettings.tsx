@@ -72,7 +72,7 @@ export default function SettlementReportSettings() {
           type="checkbox"
           checked={enabled}
           onChange={(e) => setEnabled(e.target.checked)}
-          className="h-4 w-4 rounded border-ink-line accent-brand"
+          className="accent-brand h-4 w-4 rounded border-ink-line"
         />
         <label htmlFor="settlement-enabled" className="text-sm font-medium">
           Send end-of-day settlement report automatically at midnight
@@ -128,8 +128,8 @@ export default function SettlementReportSettings() {
           </Button>
         </div>
         <p className="text-xs text-ink-3">
-          Generates and emails the settlement summary for the selected date to the recipient
-          address above.
+          Generates and emails the settlement summary for the selected date to the recipient address
+          above.
         </p>
       </div>
     </form>

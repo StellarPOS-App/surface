@@ -24,9 +24,7 @@ export default function WebhookSettings() {
   }
 
   function toggleEvent(ev: WebhookEvent) {
-    setEvents((prev) =>
-      prev.includes(ev) ? prev.filter((e) => e !== ev) : [...prev, ev],
-    );
+    setEvents((prev) => (prev.includes(ev) ? prev.filter((e) => e !== ev) : [...prev, ev]));
   }
 
   function handleSubmit(e: FormEvent) {
@@ -64,8 +62,8 @@ export default function WebhookSettings() {
         />
         <p className="text-xs text-ink-3">
           Must be HTTPS. The backend sends a POST with an{' '}
-          <code className="font-mono">X-StellarPOS-Signature</code> header
-          (HMAC-SHA256 of the payload, keyed to your signing secret).
+          <code className="font-mono">X-StellarPOS-Signature</code> header (HMAC-SHA256 of the
+          payload, keyed to your signing secret).
         </p>
       </div>
 
@@ -76,7 +74,7 @@ export default function WebhookSettings() {
             <label key={value} className="flex cursor-pointer items-center gap-3 text-sm">
               <input
                 type="checkbox"
-                className="h-4 w-4 rounded border-ink-line accent-hue"
+                className="accent-hue h-4 w-4 rounded border-ink-line"
                 checked={events.includes(value)}
                 onChange={() => toggleEvent(value)}
               />
@@ -89,7 +87,7 @@ export default function WebhookSettings() {
       <label className="flex cursor-pointer items-center gap-3 text-sm">
         <input
           type="checkbox"
-          className="h-4 w-4 rounded border-ink-line accent-hue"
+          className="accent-hue h-4 w-4 rounded border-ink-line"
           checked={enabled}
           onChange={(e) => setEnabled(e.target.checked)}
         />

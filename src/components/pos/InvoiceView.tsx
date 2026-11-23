@@ -57,7 +57,7 @@ export default function InvoiceView({
           {sale.customerName ? (
             <p className="font-medium text-gray-800">{sale.customerName}</p>
           ) : (
-            <p className="text-gray-400 italic">Walk-in customer</p>
+            <p className="italic text-gray-400">Walk-in customer</p>
           )}
         </div>
         <div>
@@ -129,7 +129,7 @@ export default function InvoiceView({
           </div>
           <div className="pt-1 text-xs text-gray-500">
             <p>Scan to verify this transaction on the Stellar network.</p>
-            <p className="mt-1 font-mono text-[10px] break-all text-gray-400">{qrValue}</p>
+            <p className="mt-1 break-all font-mono text-[10px] text-gray-400">{qrValue}</p>
           </div>
         </div>
       )}
@@ -145,15 +145,7 @@ export default function InvoiceView({
   );
 }
 
-function TotalRow({
-  label,
-  value,
-  strong,
-}: {
-  label: string;
-  value: string;
-  strong?: boolean;
-}) {
+function TotalRow({ label, value, strong }: { label: string; value: string; strong?: boolean }) {
   return (
     <div
       className={cn(

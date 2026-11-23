@@ -16,13 +16,14 @@ const session = {
   token: 'tok',
 };
 
-function renderLogin() {
+function renderLogin(route = '/auth/login') {
   return renderWithProviders(
     <Routes>
       <Route path="/auth/login" element={<Login />} />
       <Route path="/pos" element={<p>register screen</p>} />
+      <Route path="/inventory" element={<p>inventory screen</p>} />
     </Routes>,
-    { route: '/auth/login' },
+    { route },
   );
 }
 
@@ -66,5 +67,31 @@ describe('Login', () => {
     await userEvent.type(screen.getByLabelText('Password'), 'wrong');
     await userEvent.click(screen.getByRole('button', { name: 'Open register' }));
     expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password');
+  });
+
+  it.each([
+    '/auth/login?returnUrl=https://evil.example/steal',
+    '/auth/login?returnUrl=//evil.example/steal',
+    '/auth/login?returnUrl=/\\evil.example/steal',
+    '/auth/login?returnUrl=javascript:alert(1)',
+  ])('ignores an external returnUrl (%s)', async (route) => {
+    mockFetch({ 'POST /api/v1/auth/login': { body: { success: true, data: session } } });
+    renderLogin(route);
+    await userEvent.type(screen.getByLabelText('Email'), 'ada@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'correct-horse-1');
+    await userEvent.click(screen.getByRole('button', { name: 'Open register' }));
+
+    expect(await screen.findByText('register screen')).toBeInTheDocument();
+    expect(screen.queryByText('inventory screen')).not.toBeInTheDocument();
+  });
+
+  it('opens a same-origin returnUrl after sign-in', async () => {
+    mockFetch({ 'POST /api/v1/auth/login': { body: { success: true, data: session } } });
+    renderLogin('/auth/login?returnUrl=/inventory');
+    await userEvent.type(screen.getByLabelText('Email'), 'ada@example.com');
+    await userEvent.type(screen.getByLabelText('Password'), 'correct-horse-1');
+    await userEvent.click(screen.getByRole('button', { name: 'Open register' }));
+
+    expect(await screen.findByText('inventory screen')).toBeInTheDocument();
   });
 });

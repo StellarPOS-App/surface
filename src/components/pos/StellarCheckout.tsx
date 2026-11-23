@@ -69,7 +69,7 @@ export default function StellarCheckout({
           path: selectedQuote.path,
           memo: request.memo,
         })
-      : request?.uri ?? '';
+      : (request?.uri ?? '');
 
   useEffect(() => {
     if (!store?.stellar.enabled) return;
@@ -184,7 +184,7 @@ export default function StellarCheckout({
 
         {/* Path payment: customer enters their wallet address to get asset options */}
         {request.status === 'pending' && (
-          <div className="rounded-lg border border-ink-line bg-paper-card px-4 py-3 space-y-3">
+          <div className="space-y-3 rounded-lg border border-ink-line bg-paper-card px-4 py-3">
             <p className="text-xs font-medium text-ink-2">
               Pay in a different asset? Enter the customer's Stellar address to see options.
             </p>
@@ -217,7 +217,7 @@ export default function StellarCheckout({
                 {pathQuotes.data && pathQuotes.data.length > 0 && (
                   <div className="relative">
                     <select
-                      className="w-full appearance-none rounded-md border border-ink-line bg-paper px-3 py-2 pr-8 text-sm font-mono focus:outline-none focus:ring-2 focus:ring-lumen"
+                      className="w-full appearance-none rounded-md border border-ink-line bg-paper px-3 py-2 pr-8 font-mono text-sm focus:outline-none focus:ring-2 focus:ring-lumen"
                       value={
                         selectedQuote
                           ? `${selectedQuote.sourceAsset.assetCode}:${selectedQuote.sourceAsset.assetIssuer ?? 'native'}`
@@ -256,9 +256,11 @@ export default function StellarCheckout({
                   <p className="text-xs text-ink-3">
                     QR updated — customer sends up to{' '}
                     <span className="font-semibold text-ink">
-                      {formatAssetAmount(selectedQuote.sendMax)} {selectedQuote.sourceAsset.assetCode}
+                      {formatAssetAmount(selectedQuote.sendMax)}{' '}
+                      {selectedQuote.sourceAsset.assetCode}
                     </span>{' '}
-                    via {selectedQuote.path.length > 0
+                    via{' '}
+                    {selectedQuote.path.length > 0
                       ? selectedQuote.path.map((a) => a.assetCode).join(' → ') + ' → '
                       : ''}
                     {request.assetCode}.
