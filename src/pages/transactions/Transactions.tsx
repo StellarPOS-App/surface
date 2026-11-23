@@ -22,6 +22,7 @@ import { useAuth } from '@/hooks/useAuth';
 import { useDebounce } from '@/hooks/useDebounce';
 import { downloadFile } from '@/lib/csv';
 import { fetchAllOrders, ordersToCsv } from '@/lib/exportOrders';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import type { Transaction, TransactionStatus } from '@/types';
 import { cn, formatDateTime, formatTime } from '@/utils/helpers';
 
@@ -64,7 +65,7 @@ function RefundDialog({ sale, onClose }: { sale: Transaction; onClose: () => voi
                     toast.success('Refunded');
                     onClose();
                   },
-                  onError: (e) => toast.error(e.message),
+                  onError: (e) => toast.error(publicErrorMessage(e)),
                 },
               )
             }
@@ -139,7 +140,7 @@ function Detail({ id }: { id: string }) {
             onClick={() =>
               voidSale.mutate(sale.id, {
                 onSuccess: () => toast.success('Sale voided, stock released'),
-                onError: (e) => toast.error(e.message),
+                onError: (e) => toast.error(publicErrorMessage(e)),
               })
             }
           >
@@ -231,7 +232,7 @@ export default function Transactions() {
       );
       toast.success(`Exported ${orders.length} sales`);
     } catch (err) {
-      if ((err as Error).name !== 'AbortError') toast.error((err as Error).message);
+      if ((err as Error).name !== 'AbortError') toast.error(publicErrorMessage(err));
     } finally {
       if (!abort.current?.signal.aborted) setExporting(null);
     }

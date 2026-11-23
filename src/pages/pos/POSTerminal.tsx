@@ -4,6 +4,7 @@ import { toast } from 'sonner';
 import CheckoutModal from '@/components/pos/CheckoutModal';
 import ProductTag from '@/components/pos/ProductTag';
 import { categoryColor } from '@/lib/pos';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import { searchProducts } from '@/lib/search';
 import BarcodeScanner from '@/components/pos/BarcodeScanner';
 import MobileOrderBar from '@/components/pos/MobileOrderBar';
@@ -146,7 +147,7 @@ export default function POSTerminal() {
               <LoadingSpinner size="lg" />
             </div>
           )}
-          {isError && <EmptyState title={t('pos.loadFailed')}>{error.message}</EmptyState>}
+          {isError && <EmptyState title={t('pos.loadFailed')}>{publicErrorMessage(error)}</EmptyState>}
           {!isLoading && !isError && products.length === 0 && (
             <EmptyState
               title={search ? t('pos.noMatch', { query: search.trim() }) : t('pos.noProducts')}

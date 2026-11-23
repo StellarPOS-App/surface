@@ -18,6 +18,8 @@ const Inventory = lazy(() => import('@/pages/inventory/Inventory'));
 const Transactions = lazy(() => import('@/pages/transactions/Transactions'));
 const Customers = lazy(() => import('@/pages/customers/Customers'));
 const Settings = lazy(() => import('@/pages/settings/Settings'));
+// Receipt links must pass through ProtectedRoute and load via the scoped API.
+const ReceiptPage = lazy(() => import('@/pages/receipts/ReceiptPage'));
 
 const pageFallback = (
   <div className="grid place-items-center py-24">
@@ -69,6 +71,7 @@ function App() {
                   <Route path="transactions" element={<Transactions />} />
                   <Route path="customers" element={<Customers />} />
                   <Route path="settings" element={<Settings />} />
+                  <Route path="receipts/:id" element={<ReceiptPage />} />
                   <Route path="*" element={<Navigate to="/pos" replace />} />
                 </Routes>
               </Suspense>

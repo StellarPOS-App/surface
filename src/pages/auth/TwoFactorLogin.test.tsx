@@ -86,7 +86,8 @@ describe('two-factor sign-in', () => {
     await userEvent.type(screen.getByLabelText('Recovery code'), 'k7qp-2m9x');
     expect(screen.getByLabelText('Recovery code')).toHaveValue('K7QP-2M9X');
     await userEvent.click(screen.getByRole('button', { name: 'Verify and open register' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('That code is not right');
+    expect(await screen.findByRole('alert')).toHaveTextContent('That code is not valid. Try again.');
+    expect(screen.queryByText('That code is not right')).not.toBeInTheDocument();
 
     await userEvent.click(screen.getByRole('button', { name: 'Back' }));
     expect(screen.getByRole('heading', { name: 'Sign in to the till' })).toBeInTheDocument();

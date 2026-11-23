@@ -3,6 +3,7 @@ import { useState } from 'react';
 import { useSearchParams } from 'react-router-dom';
 import { toast } from 'sonner';
 import { categoryColor } from '@/lib/pos';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import Badge from '@/components/ui/Badge';
 import Button from '@/components/ui/Button';
 import EmptyState from '@/components/ui/EmptyState';
@@ -38,7 +39,7 @@ export default function Inventory() {
   const products = data?.data ?? [];
 
   const nudge = (p: Product, delta: number) =>
-    adjust.mutate({ id: p.id, delta }, { onError: (err) => toast.error(err.message) });
+    adjust.mutate({ id: p.id, delta }, { onError: (err) => toast.error(publicErrorMessage(err)) });
 
   return (
     <div className="mx-auto max-w-[1300px]">
@@ -182,7 +183,7 @@ export default function Inventory() {
             <LoadingSpinner size="lg" />
           </div>
         )}
-        {isError && <EmptyState title="Could not load stock">{error.message}</EmptyState>}
+        {isError && <EmptyState title="Could not load stock">{publicErrorMessage(error)}</EmptyState>}
         {!isLoading && !isError && products.length === 0 && (
           <EmptyState
             title={lowStock ? 'Nothing is running low' : 'No products yet'}

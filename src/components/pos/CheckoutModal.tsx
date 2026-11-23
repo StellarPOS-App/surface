@@ -5,6 +5,7 @@ import { useCreateSale, useRecordPayment, useTransaction, useVoidSale } from '@/
 import { useFormatMoney } from '@/hooks/useFormatMoney';
 import { useT } from '@/i18n';
 import { METHOD_LABEL, quickTenders } from '@/lib/pos';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import { useCartStore } from '@/stores/cartStore';
 import type { PaymentMethod, Transaction } from '@/types';
 import { cn, parseCents } from '@/utils/helpers';
@@ -46,7 +47,7 @@ function CashTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
             });
           onDone(transaction);
         },
-        onError: (err) => toast.error(err.message),
+        onError: (err) => toast.error(publicErrorMessage(err)),
       },
     );
 
@@ -114,7 +115,7 @@ function CardTender({ sale, onDone }: { sale: Transaction; onDone: (t: Transacti
           { transactionId: sale.id, method: 'card', amountCents: amount! },
           {
             onSuccess: ({ transaction }) => onDone(transaction),
-            onError: (err) => toast.error(err.message),
+            onError: (err) => toast.error(publicErrorMessage(err)),
           },
         );
       }}
@@ -185,7 +186,7 @@ export default function CheckoutModal({ open, initialMethod, onClose }: Checkout
       {
         onSuccess: (s) => setSaleId(s.id),
         onError: (err) => {
-          toast.error(err.message);
+          toast.error(publicErrorMessage(err));
           onClose();
         },
       },

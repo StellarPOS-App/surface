@@ -43,7 +43,8 @@ export default function Login() {
       // With two-factor sign-in on, a code step follows instead.
       if (useAuthStore.getState().isAuthenticated) navigate(from, { replace: true });
     } catch {
-      // The store holds the message; it is rendered below.
+      // The store holds a fixed, user-facing message. Never log `values`:
+      // it contains the password.
     }
   });
 

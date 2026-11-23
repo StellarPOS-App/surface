@@ -55,7 +55,7 @@ describe('Login', () => {
     await waitFor(() => expect(localStorage.getItem('stellarpos.session')).toContain('tok'));
   });
 
-  it('shows the server error on bad credentials', async () => {
+  it('shows a fixed, user-facing error on bad credentials', async () => {
     mockFetch({
       'POST /api/v1/auth/login': {
         status: 401,
@@ -66,7 +66,8 @@ describe('Login', () => {
     await userEvent.type(screen.getByLabelText('Email'), 'ada@example.com');
     await userEvent.type(screen.getByLabelText('Password'), 'wrong');
     await userEvent.click(screen.getByRole('button', { name: 'Open register' }));
-    expect(await screen.findByRole('alert')).toHaveTextContent('Invalid email or password');
+    expect(await screen.findByRole('alert')).toHaveTextContent('The email or password is incorrect.');
+    expect(screen.queryByText('Invalid email or password')).not.toBeInTheDocument();
   });
 
   it.each([

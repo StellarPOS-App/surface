@@ -12,6 +12,7 @@ import LoadingSpinner from '@/components/ui/LoadingSpinner';
 import Modal from '@/components/ui/Modal';
 import Money from '@/components/ui/Money';
 import PageHeader from '@/components/ui/PageHeader';
+import { publicErrorMessage } from '@/lib/safeErrors';
 import {
   useCustomer,
   useCustomers,
@@ -72,7 +73,7 @@ function CustomerForm({ customer, onClose }: { customer: Customer | null; onClos
       toast.success(customer ? 'Customer updated' : 'Customer added');
       onClose();
     } catch (err) {
-      toast.error((err as Error).message);
+      toast.error(publicErrorMessage(err));
     }
   });
   return (
