@@ -1,6 +1,6 @@
 {
   "name": "@stellarpos/surface",
-  "version": "0.2.0",
+  "version": "1.0.0",
   "private": true,
   "description": "StellarPOS point-of-sale web app: register, inventory, orders, customers, reports and Stellar QR checkout",
   "license": "MIT",
