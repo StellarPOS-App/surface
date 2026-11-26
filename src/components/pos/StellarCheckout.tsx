@@ -1,5 +1,5 @@
 import { Check, ChevronDown, Copy, ExternalLink } from 'lucide-react';
-import { useEffect, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import QRCode from 'react-qr-code';
 import { toast } from 'sonner';
 import {
@@ -76,11 +76,21 @@ export default function StellarCheckout({
         })
       : (request?.uri ?? '');
 
+  // Guard against repeat initiation: React Strict Mode double-invokes effects,
+  // and a flipped-then-restored `stellar.enabled` would otherwise re-fire the
+  // mutation, letting a client spam the server's payment-request endpoint.
+  const initiatedFor = useRef<string | null>(null);
   useEffect(() => {
     if (!store?.stellar.enabled) return;
+    if (initiatedFor.current === sale.id) return;
+    initiatedFor.current = sale.id;
     create.mutate(sale.id, {
       onSuccess: (r) => setRequestId(r.id),
-      onError: (err) => toast.error(publicErrorMessage(err)),
+      onError: (err) => {
+        // Allow one retry path if the request genuinely failed before reaching the server.
+        initiatedFor.current = null;
+        toast.error(publicErrorMessage(err));
+      },
     });
     // Create once per sale.
     // eslint-disable-next-line react-hooks/exhaustive-deps
